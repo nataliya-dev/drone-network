@@ -1,3 +1,7 @@
+# Drone-network specific
+main
+.vscode/
+
 # Prerequisites
 *.d
 
