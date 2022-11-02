@@ -51,7 +51,8 @@ int send_file(image_data_t img) {
     bzero(databuf, MAXBUF);
     frame_size = read(file_desc, databuf, MAXBUF);
     printf("frame_size: %ld\n", frame_size);
-    printf("databuf: %s\n", databuf);
+    size_t bytes_written = write(sockfd, databuf, strlen(databuf));
+    printf("bytes_written: %ld\n", bytes_written);
     if (frame_size == -1) {
       printf("File read error\n");
       break;
