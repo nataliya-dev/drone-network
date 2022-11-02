@@ -37,6 +37,7 @@ int connect_to_host(char *hostname, int portno) {
 }
 
 int send_file(image_data_t img) {
+  printf("Opening file: %s\n", img.image_name);
   int file_desc = open(img.image_name, O_RDONLY, S_IRUSR);
   if (file_desc == -1) {
     printf("Error opening file\n");
@@ -50,7 +51,7 @@ int send_file(image_data_t img) {
     bzero(databuf, MAXBUF);
     frame_size = read(file_desc, databuf, MAXBUF);
     printf("frame_size: %ld\n", frame_size);
-
+    printf("databuf: %s\n", databuf);
     if (frame_size == -1) {
       printf("File read error\n");
       break;

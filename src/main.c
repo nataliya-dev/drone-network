@@ -6,9 +6,9 @@ image_data_t images[MAX_IMAGES];
 
 routing_entry_t create_sample_neighbor() {
   routing_entry_t entry;
-  entry.destination_ip = "172.31.0.1";
+  entry.destination_ip = "192.168.50.139";
   entry.cost = 0;
-  entry.next_hop_ip = "172.31.0.1";
+  entry.next_hop_ip = "192.168.50.139";
   return entry;
 }
 
@@ -25,6 +25,14 @@ void populate_shared_resources() {
   image_data_t img = create_sample_image();
   neighbors[0] = entry;
   images[0] = img;
+}
+
+void read_images_from_current_dir() {
+  // get list of images in img directory
+  // loop through image names
+  // create image_data_t for each image
+  //  store the image_data_t inside images array
+  // done
 }
 
 int main() {
