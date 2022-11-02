@@ -1,5 +1,6 @@
 # Drone-network specific
 main
+receiver
 .vscode/
 
 # Prerequisites

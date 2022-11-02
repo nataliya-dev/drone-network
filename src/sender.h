@@ -50,6 +50,7 @@ int send_file(image_data_t img) {
     bzero(databuf, MAXBUF);
     frame_size = read(file_desc, databuf, MAXBUF);
     printf("frame_size: %ld\n", frame_size);
+
     if (frame_size == -1) {
       printf("File read error\n");
       break;
