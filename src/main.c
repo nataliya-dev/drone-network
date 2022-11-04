@@ -6,9 +6,9 @@ image_data_t images[MAX_IMAGES];
 
 routing_entry_t create_sample_neighbor() {
   routing_entry_t entry;
-  entry.destination_ip = "192.168.50.132";
+  entry.destination_ip = "192.168.50.249";
   entry.cost = 0;
-  entry.next_hop_ip = "192.168.50.132";
+  entry.next_hop_ip = "192.168.50.249";
   return entry;
 }
 
@@ -16,7 +16,7 @@ image_data_t create_sample_image() {
   image_data_t img;
   img.source_ip = "2.2.2.2";
   img.location = "location";
-  img.image_name = "sample.txt";
+  img.image_name = "sample.jpg";
   return img;
 }
 

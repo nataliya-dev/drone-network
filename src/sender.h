@@ -51,22 +51,23 @@ int send_file(image_data_t img) {
     bzero(databuf, MAXBUF);
     frame_size = read(file_desc, databuf, MAXBUF);
     printf("frame_size: %ld\n", frame_size);
-    size_t bytes_written = write(sockfd, databuf, strlen(databuf));
-    printf("bytes_written: %ld\n", bytes_written);
     if (frame_size == -1) {
       printf("File read error\n");
       break;
     }
+    size_t bytes_written = write(sockfd, databuf, strlen(databuf));
+    printf("img bytes_written: %ld\n", bytes_written);
+
   } while (frame_size > 0);
 
   return 1;
 }
 
 void run_sender(routing_entry_t neighbors[], image_data_t images[]) {
-  routing_entry_t entry = neighbors[0];
+  routing_entry_t neighbor = neighbors[0];
   image_data_t img = images[0];
-  int status = connect_to_host(entry.destination_ip, PORTNO);
 
+  int status = connect_to_host(neighbor.destination_ip, PORTNO);
   if (status == -1) {
     return;
   }
