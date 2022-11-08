@@ -1,37 +1,12 @@
-#include <arpa/inet.h>
-#include <dirent.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>     /* for fgets */
-#include <strings.h>    /* for bzero, bcopy */
-#include <sys/socket.h> /* for socket use */
-#include <sys/time.h>
-#include <time.h>
-#include <unistd.h> /* for read, write */
+#include "receiver.h"
 
-int open_listenfd(int port);
-void *thread(void *vargp);
-void handleMessages(int connfd);
-
-#define LISTENQ 50   /* second argument to listen() */
-#define MAXLINE 8192 /* max text line length */
-
-int main(int argc, char **argv) {
-  int listenfd, *connfdp, port;
+int run_receiver() {
+  int listenfd, *connfdp;
   socklen_t clientlen = sizeof(struct sockaddr_in);
   struct sockaddr_in clientaddr;
   pthread_t tid;
 
-  if (argc != 2) {
-    fprintf(stderr, "usage: %s <port>\n", argv[0]);
-    exit(0);
-  }
-  port = atoi(argv[1]);
-
-  listenfd = open_listenfd(port);
+  listenfd = open_listenfd(htons(PORTNO));
 
   while (1) {
     connfdp = malloc(4 * sizeof(int));
@@ -95,9 +70,9 @@ int open_listenfd(int port) {
 
 void handleMessages(int connfd) {
   size_t readRetVal;
-  char buffer[MAXLINE];
+  char buffer[MAXBUF];
 
-  readRetVal = read(connfd, buffer, MAXLINE);
+  readRetVal = read(connfd, buffer, MAXBUF);
   printf("Received: %s\n", buffer);
   printf("readRetVal: %ld\n", readRetVal);
 }

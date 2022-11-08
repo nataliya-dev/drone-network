@@ -1,15 +1,12 @@
 CFLAGS  = -g -Wall -pthread
 CC = gcc
+OBJFILES = src/sender.o src/receiver.o src/main.o
+TARGET = main
 
-TARGETS = sender_program receiver_program
+all: $(TARGET)
 
-all: $(TARGETS)
-
-sender_program: src/main.c
-	gcc $(CFLAGS) src/main.c -o main
-	
-receiver_program: src/receiver.c
-	gcc $(CFLAGS) src/receiver.c -o receiver
+$(TARGET): $(OBJFILES)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES)
 
 clean:
-	rm main
+	rm -f $(OBJFILES) $(TARGET) *~

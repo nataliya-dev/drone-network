@@ -1,3 +1,4 @@
+#include "receiver.h"
 #include "sender.h"
 #include "shared_structs.h"
 
@@ -15,7 +16,6 @@ routing_entry_t create_sample_neighbor() {
 image_data_t create_sample_image() {
   image_data_t img;
   img.source_ip = "2.2.2.2";
-  img.location = "location";
   img.image_name = "sample.jpg";
   return img;
 }
@@ -27,15 +27,7 @@ void populate_shared_resources() {
   images[0] = img;
 }
 
-void read_images_from_current_dir() {
-  // get list of images in img directory
-  // loop through image names
-  // create image_data_t for each image
-  //  store the image_data_t inside images array
-  // done
-}
-
-int main() {
+int main(int argc, char** argv) {
   printf("Initializing Drone Program!\n");
   populate_shared_resources();
 
