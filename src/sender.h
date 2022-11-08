@@ -9,6 +9,6 @@ socklen_t addrlen;
 
 int connect_to_host(char *hostname, int portno);
 int send_file(image_data_t img);
-void run_sender(routing_entry_t neighbors[], image_data_t images[]);
+void *run_sender(void *vargp);
 
 #endif

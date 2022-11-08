@@ -54,18 +54,31 @@ int send_file(image_data_t img) {
   return 1;
 }
 
-void run_sender(routing_entry_t neighbors[], image_data_t images[]) {
-  routing_entry_t neighbor = neighbors[0];
-  image_data_t img = images[0];
+void *run_sender(void *vargp) {
+  printf("Start run_sender\n");
 
-  int status = connect_to_host(neighbor.destination_ip, PORTNO);
-  if (status == -1) {
-    return;
+  thread_data_t thread_data = *((thread_data_t *)vargp);
+  routing_entry_t neighbor = thread_data.neighbors[0];
+  image_data_t img = thread_data.images[0];
+
+  char *my_ip = " ";
+
+  while (1) {
+    if (img.source_ip != my_ip) {
+      sleep(2);
+      continue;
+    }
+
+    int status = connect_to_host(neighbor.destination_ip, PORTNO);
+    if (status == -1) {
+      return NULL;
+    }
+
+    status = send_file(img);
+    if (status == -1) {
+      return NULL;
+    }
   }
 
-  status = send_file(img);
-  if (status == -1) {
-    return;
-  }
   printf("Image sent!\n");
 }

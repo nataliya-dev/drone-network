@@ -36,4 +36,9 @@ typedef struct image_data_s {
   char *image_name;
 } image_data_t;
 
+typedef struct thread_data_s {
+  routing_entry_t neighbors[MAX_NEIGHBORS];
+  image_data_t images[MAX_IMAGES];
+} thread_data_t;
+
 #endif

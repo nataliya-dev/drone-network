@@ -1,6 +1,8 @@
 #include "receiver.h"
 
-int run_receiver() {
+void *run_receiver(void *arg) {
+  printf("Start run_receiver\n");
+
   int listenfd, *connfdp;
   socklen_t clientlen = sizeof(struct sockaddr_in);
   struct sockaddr_in clientaddr;
