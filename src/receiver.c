@@ -72,9 +72,29 @@ int open_listenfd(int port) {
 
 void handleMessages(int connfd) {
   size_t readRetVal;
+  size_t writeRetVal;
   char buffer[MAXBUF];
 
-  readRetVal = read(connfd, buffer, MAXBUF);
+  /*/* Open new or existing file for writing; writes should always
+append to end of file */
+  int fd = open("rcvd.jpg", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
+                 S_IRUSR | S_IWUSR);
+
+  do
+  {
+    readRetVal = read(connfd, buffer, MAXBUF);
+
+    writeRetVal = write(fd, buffer, readRetVal);
+
+    printf("writeRetVal = %ld\n", writeRetVal);
+  }while(readRetVal > 0);
+
+  /*to create a file in append mode
+    into which the read buffer in previous step
+    shall write to continously*/
+
+
+
   printf("Received: %s\n", buffer);
   printf("readRetVal: %ld\n", readRetVal);
 }
