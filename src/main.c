@@ -6,7 +6,7 @@ thread_data_t thread_data_;
 
 routing_entry_t create_sample_neighbor() {
   routing_entry_t entry;
-  entry.destination_ip = "192.168.50.249";
+  entry.destination_ip = "192.168.50.132";
   entry.cost = 0;
   entry.next_hop_ip = " ";
   return entry;
@@ -39,10 +39,10 @@ int main(int argc, char** argv) {
   iret2 = pthread_create(&thread2, NULL, run_receiver, NULL);
 
   pthread_join(thread1, NULL);
-  // pthread_join(thread2, NULL);
+  pthread_join(thread2, NULL);
 
   printf("Thread 1 returns: %d\n", iret1);
-  // printf("Thread 2 returns: %d\n", iret2);
+  printf("Thread 2 returns: %d\n", iret2);
 
   return 0;
 }

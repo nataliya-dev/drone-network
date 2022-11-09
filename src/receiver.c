@@ -8,7 +8,7 @@ void *run_receiver(void *arg) {
   struct sockaddr_in clientaddr;
   pthread_t tid;
 
-  listenfd = open_listenfd(htons(PORTNO));
+  listenfd = open_listenfd(PORTNO);
 
   while (1) {
     connfdp = malloc(4 * sizeof(int));
@@ -44,16 +44,15 @@ int open_listenfd(int port) {
   // int optval = 1;
   struct sockaddr_in serveraddr;
   socklen_t addrlen;
-  struct timeval tv;
-  tv.tv_sec = 20;
-  tv.tv_usec = 0;
 
   /* Create a socket descriptor */
-  if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) return -1;
-  /* Eliminates "Address already in use" error from bind. */
-  if (setsockopt(listenfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv,
-                 sizeof tv) < 0)
+  if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     return -1;
+  }
+  /* Eliminates "Address already in use" error from bind. */
+  if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int))) {
+    return -1;
+  }
 
   /* listenfd will be an endpoint for all requests to port
      on any IP address for this host */
@@ -78,22 +77,19 @@ void handleMessages(int connfd) {
   /*/* Open new or existing file for writing; writes should always
 append to end of file */
   int fd = open("rcvd.jpg", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
-                 S_IRUSR | S_IWUSR);
+                S_IRUSR | S_IWUSR);
 
-  do
-  {
+  do {
     readRetVal = read(connfd, buffer, MAXBUF);
 
     writeRetVal = write(fd, buffer, readRetVal);
 
     printf("writeRetVal = %ld\n", writeRetVal);
-  }while(readRetVal > 0);
+  } while (readRetVal > 0);
 
   /*to create a file in append mode
     into which the read buffer in previous step
     shall write to continously*/
-
-
 
   printf("Received: %s\n", buffer);
   printf("readRetVal: %ld\n", readRetVal);

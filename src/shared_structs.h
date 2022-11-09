@@ -22,7 +22,7 @@
 #define LISTENQ 50
 #define MAX_NEIGHBORS 100
 #define MAX_IMAGES 100
-#define PORTNO 8888
+#define PORTNO 8080
 
 typedef struct routing_entry_s {
   char *source_ip;

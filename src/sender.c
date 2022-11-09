@@ -1,5 +1,6 @@
 #include "sender.h"
 
+#include <errno.h>
 int connect_to_host(char *hostname, int portno) {
   printf("Hostname: %s\n", hostname);
   printf("Port: %d\n", portno);
@@ -18,7 +19,7 @@ int connect_to_host(char *hostname, int portno) {
 
   int status = connect(sockfd, (struct sockaddr *)&servaddr, addrlen);
   if (status == -1) {
-    printf("Unable to connect to host\n");
+    printf("Unable to connect to host %d\n", errno);
     return -1;
   }
 
@@ -46,7 +47,7 @@ int send_file(image_data_t img) {
       printf("File read error\n");
       break;
     }
-    size_t bytes_written = write(sockfd, databuf, strlen(databuf));
+    size_t bytes_written = write(sockfd, databuf, frame_size);
     printf("img bytes_written: %ld\n", bytes_written);
 
   } while (frame_size > 0);
@@ -61,22 +62,17 @@ void *run_sender(void *vargp) {
   routing_entry_t neighbor = thread_data.neighbors[0];
   image_data_t img = thread_data.images[0];
 
-  char *my_ip = " ";
-
   while (1) {
-    if (img.source_ip != my_ip) {
-      sleep(2);
-      continue;
-    }
-
     int status = connect_to_host(neighbor.destination_ip, PORTNO);
     if (status == -1) {
-      return NULL;
+      sleep(1);
+      continue;
     }
 
     status = send_file(img);
     if (status == -1) {
-      return NULL;
+      sleep(1);
+      continue;
     }
   }
 
