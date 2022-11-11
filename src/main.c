@@ -1,3 +1,4 @@
+#include "parse_neighbor_list.h"
 #include "receiver.h"
 #include "sender.h"
 #include "shared_structs.h"
@@ -30,6 +31,25 @@ int main(int argc, char** argv) {
   printf("Initializing Drone Program!\n");
   populate_shared_resources();
   printf("Finished Initializing Drone Program!\n");
+
+  char* file_name = "neighbor_list.json";
+  struct stat st;
+  stat(file_name, &st);
+  size_t file_size = st.st_size;
+  printf("file_size %ld\n", file_size);
+
+  int file_desc = open(file_name, O_RDONLY, S_IRUSR);
+  if (file_desc == -1) {
+    printf("error opening file\n");
+  }
+
+  char data_buffer[MAXBUF];
+  size_t frame_size = read(file_desc, data_buffer, MAXBUF);
+  printf("strlen(data_buffer) %ld\n", strlen(data_buffer));
+
+  char destination_ip[16];
+  get_destination_ip(data_buffer, "192.168.50.1", destination_ip);
+  return 0;
 
   pthread_t thread1;
   pthread_t thread2;

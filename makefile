@@ -1,6 +1,6 @@
 CFLAGS  = -g -Wall -pthread
 CC = gcc
-OBJFILES = src/sender.o src/receiver.o src/main.o
+OBJFILES = src/cJSON.o src/parse_neighbor_list.o src/sender.o src/receiver.o src/main.o
 TARGET = main
 
 all: $(TARGET)
