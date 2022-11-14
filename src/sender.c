@@ -38,7 +38,7 @@ int filter_dir(const struct dirent *e) {
 int get_num_available_files() {
   struct dirent **namelist;
   int file_num = scandir("./imgs", &namelist, filter_dir, alphasort);
-  printf("Num files: %d\n", file_num);
+  // printf("Num files: %d\n", file_num);
   free(namelist);
   return file_num;
 }
@@ -113,12 +113,11 @@ int send_file() {
 }
 
 void *run_sender(void *vargp) {
+  printf("Start run_sender\n");
   while (1) {
-    printf("Start run_sender\n");
-
     int num_files = get_num_available_files();
     if (num_files <= 0) {
-      printf("No available files for sending\n");
+      // printf("No available files for sending\n");
       goto end;
     }
 

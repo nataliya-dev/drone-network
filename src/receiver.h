@@ -4,6 +4,7 @@
 
 int open_listenfd(int port);
 void *thread(void *vargp);
+void move_recvd_file();
 void handleMessages(int connfd);
 void *run_receiver(void *);
 

@@ -70,6 +70,7 @@ int open_listenfd(int port) {
 } /* end open_listenfd */
 
 void move_recvd_file() {
+  printf("Moving received file\n");
   char old_name[] = "rcvd.jpg";
   char folder_path[10] = "./imgs";
   char image_name[10] = "img_";
@@ -78,10 +79,12 @@ void move_recvd_file() {
   printf("New image name %s\n", new_name);
 
   int ret = rename(old_name, new_name);
+  printf("rename ret %d\n", ret);
+
   if (ret == 0) {
-    printf("File renamed successfully");
+    printf("File renamed successfully\n");
   } else {
-    printf("Error: unable to rename the file");
+    printf("Error: unable to rename the file\n");
   }
 }
 
@@ -98,11 +101,10 @@ void handleMessages(int connfd) {
 
     writeRetVal = write(fd, buffer, readRetVal);
 
-    printf("writeRetVal = %ld\n", writeRetVal);
+    // printf("readRetVal = %ld\n", readRetVal);
+    // printf("writeRetVal = %ld\n", writeRetVal);
+
   } while (readRetVal > 0);
 
   move_recvd_file();
-
-  printf("Received: %s\n", buffer);
-  printf("readRetVal: %ld\n", readRetVal);
 }
