@@ -69,13 +69,27 @@ int open_listenfd(int port) {
   return listenfd;
 } /* end open_listenfd */
 
+void move_recvd_file() {
+  char old_name[] = "rcvd.jpg";
+  char folder_path[10] = "./imgs";
+  char image_name[10] = "img_";
+  char new_name[40];
+  sprintf(new_name, "%s/%s%d", folder_path, image_name, rand() % 50);
+  printf("New image name %s\n", new_name);
+
+  int ret = rename(old_name, new_name);
+  if (ret == 0) {
+    printf("File renamed successfully");
+  } else {
+    printf("Error: unable to rename the file");
+  }
+}
+
 void handleMessages(int connfd) {
   size_t readRetVal;
   size_t writeRetVal;
   char buffer[MAXBUF];
 
-  /*/* Open new or existing file for writing; writes should always
-append to end of file */
   int fd = open("rcvd.jpg", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
                 S_IRUSR | S_IWUSR);
 
@@ -87,9 +101,7 @@ append to end of file */
     printf("writeRetVal = %ld\n", writeRetVal);
   } while (readRetVal > 0);
 
-  /*to create a file in append mode
-    into which the read buffer in previous step
-    shall write to continously*/
+  move_recvd_file();
 
   printf("Received: %s\n", buffer);
   printf("readRetVal: %ld\n", readRetVal);

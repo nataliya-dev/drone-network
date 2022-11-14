@@ -13,5 +13,6 @@ int send_file();
 void *run_sender(void *vargp);
 void get_img_name(char *img_name);
 int filter_dir(const struct dirent *e);
+int get_num_available_files();
 
 #endif

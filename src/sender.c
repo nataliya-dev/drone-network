@@ -35,6 +35,14 @@ int filter_dir(const struct dirent *e) {
   return !(st.st_mode & S_IFDIR);
 }
 
+int get_num_available_files() {
+  struct dirent **namelist;
+  int file_num = scandir("./imgs", &namelist, filter_dir, alphasort);
+  printf("Num files: %d\n", file_num);
+  free(namelist);
+  return file_num;
+}
+
 void get_img_name(char *img_name) {
   struct dirent **namelist;
 
@@ -94,12 +102,12 @@ int send_file() {
 
   } while (frame_size > 0);
 
-  // int is_rem = remove(file_path);
-  // if (is_rem == 0) {
-  //   printf("File deleted successfully.\n");
-  // } else {
-  //   perror("Delete file error.\n");
-  // }
+  int is_rem = remove(file_path);
+  if (is_rem == 0) {
+    printf("File deleted successfully.\n");
+  } else {
+    perror("Delete file error.\n");
+  }
 
   return 1;
 }
@@ -107,6 +115,13 @@ int send_file() {
 void *run_sender(void *vargp) {
   while (1) {
     printf("Start run_sender\n");
+
+    int num_files = get_num_available_files();
+    if (num_files <= 0) {
+      printf("No available files for sending\n");
+      goto end;
+    }
+
     int status;
     char *nl_file_name = "neighbor_list.json";
 
