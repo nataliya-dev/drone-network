@@ -21,8 +21,6 @@
 
 #define MAXBUF 8192
 #define LISTENQ 50
-#define MAX_NEIGHBORS 100
-#define MAX_IMAGES 100
 #define PORTNO 8080
 
 typedef struct routing_entry_s {
@@ -38,8 +36,6 @@ typedef struct image_data_s {
 } image_data_t;
 
 typedef struct thread_data_s {
-  routing_entry_t neighbors[MAX_NEIGHBORS];
-  image_data_t images[MAX_IMAGES];
 } thread_data_t;
 
 #endif
