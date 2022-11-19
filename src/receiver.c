@@ -71,21 +71,25 @@ int open_listenfd(int port) {
 
 void move_recvd_file() {
   printf("Moving received file\n");
-  char old_name[] = "rcvd.jpg";
-  char folder_path[10] = "./imgs";
-  char image_name[10] = "img_";
-  char new_name[40];
-  sprintf(new_name, "%s/%s%d", folder_path, image_name, rand() % 50);
-  printf("New image name %s\n", new_name);
+  // char old_name[] = "rcvd.jpg";
+  // char folder_path[10] = "./imgs";
+  // char image_name[10] = "img_";
+  // char new_name[40];
+  // sprintf(new_name, "%s/%s%d", folder_path, image_name, rand() % 50);
+  // printf("New image name %s\n", new_name);
 
-  int ret = rename(old_name, new_name);
-  printf("rename ret %d\n", ret);
+  // int ret = rename(old_name, new_name);
+  // printf("rename ret %d\n", ret);
 
-  if (ret == 0) {
-    printf("File renamed successfully\n");
-  } else {
-    printf("Error: unable to rename the file\n");
-  }
+  char command[50];
+  strcpy(command, "cp rcvd.jpg imgs/img.jpg");
+  system(command);
+
+  // if (ret == 0) {
+  //   printf("File renamed successfully\n");
+  // } else {
+  //   printf("Error: unable to rename the file\n");
+  // }
 }
 
 void handleMessages(int connfd) {
@@ -96,15 +100,23 @@ void handleMessages(int connfd) {
   int fd = open("rcvd.jpg", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
                 S_IRUSR | S_IWUSR);
 
+  struct timeval tv;
+  tv.tv_sec = 1;
+  tv.tv_usec = 0;
+  setsockopt(connfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof tv);
+
   do {
-    readRetVal = read(connfd, buffer, MAXBUF);
+    printf("waiting read\n");
+    readRetVal = recv(connfd, buffer, MAXBUF, 0);
 
     writeRetVal = write(fd, buffer, readRetVal);
 
-    // printf("readRetVal = %ld\n", readRetVal);
-    // printf("writeRetVal = %ld\n", writeRetVal);
+    printf("readRetVal = %ld\n", readRetVal);
+    printf("writeRetVal = %ld\n", writeRetVal);
 
-  } while (readRetVal > 0);
+  } while (readRetVal != -1);
 
-  // move_recvd_file();
+  sleep(2);
+
+  move_recvd_file();
 }
