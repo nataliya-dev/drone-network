@@ -106,5 +106,5 @@ void handleMessages(int connfd) {
 
   } while (readRetVal > 0);
 
-  move_recvd_file();
+  // move_recvd_file();
 }

@@ -2,16 +2,17 @@
 #include <string.h>
 #include <sys/types.h>
 //#include <linux/in.h>
-#include <sys/socket.h>
-#include <sys/select.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+
 #include "b_client.h"
 
 #define IP_FOUND "IP_FOUND"
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
 
-void * broadcast_client(void * arg) {
+void* broadcast_client(void* arg) {
   int sock;
   int yes = 1;
   struct sockaddr_in broadcast_addr;
@@ -22,16 +23,16 @@ void * broadcast_client(void * arg) {
   fd_set readfd;
   char buffer[1024];
   int i;
-  
+
   sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (sock < 0) {
     perror("sock error");
-    //return -1;
+    // return -1;
   }
   ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char*)&yes, sizeof(yes));
   if (ret == -1) {
     perror("setsockopt error");
-    //return 0;
+    // return 0;
   }
 
   addr_len = sizeof(struct sockaddr_in);
@@ -41,9 +42,9 @@ void * broadcast_client(void * arg) {
   broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
   broadcast_addr.sin_port = htons(PORT);
 
-  for (i=0;i<3;i++) {
-    ret = sendto(sock, IP_FOUND, strlen(IP_FOUND), 0, (struct sockaddr*) &broadcast_addr, addr_len);
-
+  while (1) {
+    ret = sendto(sock, IP_FOUND, strlen(IP_FOUND), 0,
+                 (struct sockaddr*)&broadcast_addr, addr_len);
     FD_ZERO(&readfd);
     FD_SET(sock, &readfd);
 
@@ -51,13 +52,15 @@ void * broadcast_client(void * arg) {
 
     if (ret > 0) {
       if (FD_ISSET(sock, &readfd)) {
-        count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr*)&server_addr, &addr_len);
-        printf("\trecvmsg is %s\n", buffer);
+        count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr*)&server_addr,
+                         &addr_len);
+        printf("\tb_client:recvmsg is %s\n", buffer);
         if (strstr(buffer, IP_FOUND_ACK)) {
-          printf("\tfound server IP is %s, Port is %d\n", inet_ntoa(server_addr.sin_addr),htons(server_addr.sin_port));
+          printf("\tb_client:found server IP is %s, Port is %d\n",
+                 inet_ntoa(server_addr.sin_addr), htons(server_addr.sin_port));
         }
       }
     }
-
+    sleep(1);
   }
 }

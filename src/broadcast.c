@@ -1,17 +1,17 @@
-#include <stdio.h>
-#include "shared_structs.h"
-#include "parse_neighbor_list.h"
-#include "b_client.h"
-#include "b_server.h"
 #include "broadcast.h"
 
+#include <stdio.h>
 
-void* run_broadcast(void *arg)
-{
-    pthread_t thread1;
-    pthread_t thread2;
+#include "b_client.h"
+#include "b_server.h"
+#include "parse_neighbor_list.h"
+#include "shared_structs.h"
 
-    int iret1, iret2;
+void* run_broadcast(void* arg) {
+  pthread_t thread1;
+  pthread_t thread2;
+
+  int iret1, iret2;
 
   iret1 = pthread_create(&thread1, NULL, broadcast_server, NULL);
   sleep(1);

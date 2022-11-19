@@ -37,8 +37,9 @@ int filter_dir(const struct dirent *e) {
 
 int get_num_available_files() {
   struct dirent **namelist;
-  int file_num = scandir("./imgs", &namelist, filter_dir, alphasort);
-  // printf("Num files: %d\n", file_num);
+  int file_num = scandir("./imgs", &namelist, NULL, alphasort);
+  file_num = file_num - 2;
+  printf("Num files: %d\n", file_num);
   free(namelist);
   return file_num;
 }
@@ -48,16 +49,22 @@ void get_img_name(char *img_name) {
 
   /* Obtain a list of all files in the directory. Use the filter_dir
    * function to not include other directories like . and ..*/
-  int file_num = scandir("./imgs", &namelist, filter_dir, alphasort);
-  printf("Num files: %d\n", file_num);
-
+  int file_num = scandir("./imgs", &namelist, NULL, alphasort);
+  // printf("Num files: %d\n", file_num);
   if (file_num <= 0) {
     return;
   } else {
     while (file_num--) {
       // store each filename in the buffer
-      strcpy(img_name, namelist[file_num]->d_name);
-      free(namelist[file_num]);
+      printf("namelist[file_num]->d_name %s\n", namelist[file_num]->d_name);
+      if (strstr(namelist[file_num]->d_name, ".png") != NULL ||
+          strstr(namelist[file_num]->d_name, ".jpg") != NULL) {
+        strcpy(img_name, namelist[file_num]->d_name);
+        free(namelist[file_num]);
+      } else {
+        free(namelist[file_num]);
+        continue;
+      }
     }
   }
   // free memory
@@ -117,7 +124,7 @@ void *run_sender(void *vargp) {
   while (1) {
     int num_files = get_num_available_files();
     if (num_files <= 0) {
-      // printf("No available files for sending\n");
+      printf("No available files for sending\n");
       goto end;
     }
 
