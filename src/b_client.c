@@ -13,7 +13,7 @@
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
 
-extern int drone_number; 
+extern int drone_number;
 
 int virtual_switch(int destination_id) {
   int status = 0;
@@ -32,7 +32,7 @@ int virtual_switch(int destination_id) {
     return status;
   }
 
-  status = is_connection_allowed(data_buffer, 1, destination_id);
+  status = is_connection_allowed(data_buffer, drone_number, destination_id);
   return status;
 }
 
@@ -77,8 +77,11 @@ void* broadcast_client(void* arg) {
         broadcast_reply_t reply;
         recvfrom(sock, &reply, sizeof(reply), 0, (struct sockaddr*)&server_addr,
                  &addr_len);
+        printf("\tb_client:recvmsg drone_number is %d\n", drone_number);
 
-        if (reply.drone_id == drone_number {  // fill in with global id value
+        printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
+
+        if (reply.drone_id == drone_number) {  // fill in with global id value
           sleep(1);
           continue;
         }
@@ -88,7 +91,6 @@ void* broadcast_client(void* arg) {
           continue;
         }
 
-        printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
         printf("\tb_client:recvmsg reply.routing_table is %s\n",
                reply.routing_table);
         // if (strstr(buffer, IP_FOUND_ACK)) {
