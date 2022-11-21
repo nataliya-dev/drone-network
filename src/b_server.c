@@ -14,9 +14,11 @@
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
 
+extern int drone_number; 
+
 broadcast_reply_t create_broadcast_reply() {
   broadcast_reply_t reply;
-  reply.drone_id = 1;  // fill in with global id value
+  reply.drone_id = drone_number;  // fill in with global id value
   char filename[MAXLINE] = "routing_table.json";
 
   // printf("Opening file: %s\n", filename);
