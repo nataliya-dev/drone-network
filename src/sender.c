@@ -129,37 +129,18 @@ void *run_sender(void *vargp) {
     }
 
     int status;
-    char *nl_file_name = "neighbor_list.json";
 
-    struct stat st;
-    stat(nl_file_name, &st);
-    size_t file_size = st.st_size;
-    printf("%s file_size %ld\n", nl_file_name, file_size);
-
-    int file_desc = open(nl_file_name, O_RDONLY, S_IRUSR);
-    if (file_desc == -1) {
-      printf("error opening file %s\n", nl_file_name);
-      goto end;
-    }
-
-    char data_buffer[MAXBUF];
-    size_t frame_size = read(file_desc, data_buffer, MAXBUF);
-    if (frame_size <= 0) {
-      printf("unable to read file %s\n", nl_file_name);
-      goto end;
-    }
-
-    char source_ip[16];
-    status = get_source_ip(data_buffer, source_ip);
-    if (status != 1) {
-      printf("error parsing json file for source ip %s\n", nl_file_name);
+    int next_hop = get_next_hop_id(DESTINATION_DRONE_ID);
+    if (next_hop == -1) {
+      printf("error parsing json file for destination drone %d\n",
+             DESTINATION_DRONE_ID);
       goto end;
     }
 
     char destination_ip[16];
-    status = get_destination_ip(data_buffer, source_ip, destination_ip);
-    if (status != 1) {
-      printf("error parsing json file for destination ip %s\n", nl_file_name);
+    status = convert_to_drone_ip(next_hop, destination_ip);
+    if (status == -1) {
+      printf("error converting this drone id to ip %d\n", next_hop);
       goto end;
     }
 

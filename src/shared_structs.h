@@ -25,6 +25,8 @@
 #define LISTENQ 50
 #define PORTNO 8080
 
+#define DESTINATION_DRONE_ID 3
+
 typedef struct broadcast_reply_s {
   int drone_id;
   char routing_table[MAXBUF];

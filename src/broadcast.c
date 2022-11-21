@@ -4,7 +4,6 @@
 
 #include "b_client.h"
 #include "b_server.h"
-#include "parse_neighbor_list.h"
 #include "shared_structs.h"
 
 void* run_broadcast(void* arg) {

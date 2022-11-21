@@ -1,5 +1,4 @@
 #include "broadcast.h"
-#include "parse_neighbor_list.h"
 #include "receiver.h"
 #include "sender.h"
 #include "shared_structs.h"
@@ -15,14 +14,13 @@ void init_thread_data() {
 
 int main(int argc, char** argv) {
   printf("Initializing Drone Program!\n");
-  if(argc==1){
+  if (argc == 1) {
     printf("Input the Drone Number as an argument\n");
     return 0;
   }
-  printf("Number Of Arguments Passed: %d \n",argc);
-  printf("Drone Number: %s\n",argv[1]);
+  printf("Number Of Arguments Passed: %d \n", argc);
+  printf("Drone Number: %s\n", argv[1]);
   drone_number = atoi(argv[1]);
-
 
   init_thread_data();
 
