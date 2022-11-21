@@ -7,10 +7,32 @@
 #include <sys/socket.h>
 
 #include "b_client.h"
+#include "parse_virtual_switch.h"
 
 #define IP_FOUND "IP_FOUND"
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
+
+int virtual_switch(int destination_id) {
+  int status = 0;
+  char* filename = "virtual_switch.json";
+
+  int file_desc = open(filename, O_RDONLY, S_IRUSR);
+  if (file_desc == -1) {
+    printf("error opening file %s\n", filename);
+    return status;
+  }
+
+  char data_buffer[MAXBUF];
+  size_t frame_size = read(file_desc, data_buffer, MAXBUF);
+  if (frame_size <= 0) {
+    printf("unable to read file %s\n", filename);
+    return status;
+  }
+
+  status = is_connection_allowed(data_buffer, 1, destination_id);
+  return status;
+}
 
 void* broadcast_client(void* arg) {
   int sock;
@@ -58,6 +80,12 @@ void* broadcast_client(void* arg) {
           sleep(1);
           continue;
         }
+
+        if (virtual_switch(reply.drone_id) != 1) {
+          sleep(1);
+          continue;
+        }
+
         printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
         printf("\tb_client:recvmsg reply.routing_table is %s\n",
                reply.routing_table);
