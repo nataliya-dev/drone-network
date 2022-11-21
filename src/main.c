@@ -3,6 +3,7 @@
 #include "receiver.h"
 #include "sender.h"
 #include "shared_structs.h"
+#include "create_routing_table.h"
 
 thread_data_t thread_data_;
 int drone_number;
@@ -24,6 +25,26 @@ int main(int argc, char** argv) {
 
 
   init_thread_data();
+
+  //printf("%s\n", create_monitor());
+
+  /*to create the routing table and write it into a json file*/
+  int fd = open("routing_table_1.json", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+
+  char *retStr = create_routing_table();
+  char buff[10000];
+  int i = 0, size = 0;
+
+  /*to convert a string to character buffer*/
+  while(retStr[i] != '\0')
+  {
+    buff[i] = retStr[i];
+    i++;
+  }
+  size = i;
+
+  /*writing to the json file*/
+  write(fd, buff, size);
 
   pthread_t thread1;
   pthread_t thread2;
