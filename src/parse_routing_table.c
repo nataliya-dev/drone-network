@@ -8,7 +8,7 @@
 #include "shared_structs.h"
 
 int get_next_hop_id(int destination_id) {
-  char *rt_filename = "routing_table.json";
+  char *rt_filename = "routing_table_1.json";
   const cJSON *drone = NULL;
   const cJSON *drones = NULL;
   int next_hop = -1;
@@ -45,21 +45,14 @@ int get_next_hop_id(int destination_id) {
 
   drones = cJSON_GetObjectItemCaseSensitive(table_json, "drones");
   cJSON_ArrayForEach(drone, drones) {
-    cJSON *destination = cJSON_GetObjectItemCaseSensitive(drone, "destination");
+    cJSON *destination = cJSON_GetObjectItemCaseSensitive(drone, "drone");
     cJSON *hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
 
-    if (!cJSON_IsString(hop) || !cJSON_IsString(destination)) {
-      goto end;
-    }
+    int drone_destination = destination->valueint;
+    int drone_hop = hop->valueint;
 
-    char *drone_destination = destination->valuestring;
-    char *drone_hop = hop->valuestring;
-
-    char dest_str[10];
-    sprintf(dest_str, "%d", destination_id);
-
-    if (strcmp(drone_destination, dest_str) == 0) {
-      next_hop = atoi(drone_hop);
+    if (destination_id == drone_destination) {
+      next_hop = drone_hop;
       printf("next_hop %d\n", next_hop);
       goto end;
     }
@@ -103,17 +96,14 @@ int convert_to_drone_ip(int drone_id, char *drone_ip) {
     cJSON *number = cJSON_GetObjectItemCaseSensitive(drone, "number");
     cJSON *ip = cJSON_GetObjectItemCaseSensitive(drone, "ip");
 
-    if (!cJSON_IsString(number) || !cJSON_IsString(ip)) {
+    if (!cJSON_IsString(ip)) {
       goto end;
     }
 
-    char *cur_drone_num = number->valuestring;
+    int cur_drone_num = number->valueint;
     char *cur_drone_ip = ip->valuestring;
 
-    char drone_num_str[16];
-    sprintf(drone_num_str, "%d", drone_id);
-
-    if (strcmp(drone_num_str, cur_drone_num) == 0) {
+    if (drone_id == cur_drone_num) {
       strcpy(drone_ip, cur_drone_ip);
       // printf("drone_ip; %s\n", drone_ip);
 
