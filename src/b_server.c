@@ -19,14 +19,14 @@ broadcast_reply_t create_broadcast_reply() {
   reply.drone_id = 1;  // fill in with global id value
   char filename[MAXLINE] = "routing_table.json";
 
-  printf("Opening file: %s\n", filename);
+  // printf("Opening file: %s\n", filename);
   int file_desc = open(filename, O_RDONLY, S_IRUSR);
   if (file_desc == -1) {
     printf("Error opening file\n");
   }
 
   size_t frame_size = read(file_desc, reply.routing_table, MAXBUF);
-  printf("frame_size: %ld\n", frame_size);
+  // printf("frame_size: %ld\n", frame_size);
   if (frame_size == -1) {
     printf("File read error\n");
   }

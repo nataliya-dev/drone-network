@@ -53,6 +53,11 @@ void* broadcast_client(void* arg) {
         broadcast_reply_t reply;
         recvfrom(sock, &reply, sizeof(reply), 0, (struct sockaddr*)&server_addr,
                  &addr_len);
+
+        if (reply.drone_id == 1) {  // fill in with global id value
+          sleep(1);
+          continue;
+        }
         printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
         printf("\tb_client:recvmsg reply.routing_table is %s\n",
                reply.routing_table);
