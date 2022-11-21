@@ -1,0 +1,14 @@
+{
+  "drones": [
+    {
+      "destination": "3",
+      "next-hop": "2",
+      "cost": "2"
+    },
+    {
+      "destination": "2",
+      "next-hop": "2",
+      "cost": "1"
+    }
+  ]
+}
