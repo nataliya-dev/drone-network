@@ -17,12 +17,10 @@ void* broadcast_client(void* arg) {
   int yes = 1;
   struct sockaddr_in broadcast_addr;
   struct sockaddr_in server_addr;
-  int addr_len;
-  int count;
+  socklen_t addr_len;
   int ret;
   fd_set readfd;
-  char buffer[1024];
-  int i;
+  // char buffer[MAXLINE];
 
   sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (sock < 0) {
@@ -52,13 +50,17 @@ void* broadcast_client(void* arg) {
 
     if (ret > 0) {
       if (FD_ISSET(sock, &readfd)) {
-        count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr*)&server_addr,
-                         &addr_len);
-        printf("\tb_client:recvmsg is %s\n", buffer);
-        if (strstr(buffer, IP_FOUND_ACK)) {
-          printf("\tb_client:found server IP is %s, Port is %d\n",
-                 inet_ntoa(server_addr.sin_addr), htons(server_addr.sin_port));
-        }
+        broadcast_reply_t reply;
+        recvfrom(sock, &reply, sizeof(reply), 0, (struct sockaddr*)&server_addr,
+                 &addr_len);
+        printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
+        printf("\tb_client:recvmsg reply.routing_table is %s\n",
+               reply.routing_table);
+        // if (strstr(buffer, IP_FOUND_ACK)) {
+        //   printf("\tb_client:found server IP is %s, Port is %d\n",
+        //          inet_ntoa(server_addr.sin_addr),
+        //          htons(server_addr.sin_port));
+        // }
       }
     }
     sleep(1);

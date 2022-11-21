@@ -22,4 +22,5 @@ void* run_broadcast(void* arg) {
 
   printf("Thread 1 returns: %d\n", iret1);
   printf("Thread 2 returns: %d\n", iret2);
+  return NULL;
 }

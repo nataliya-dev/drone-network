@@ -1,6 +1,9 @@
 #ifndef B_SERVER_H
 #define B_SERVER_H
 
-void * broadcast_server(void * arg);
+#include "shared_structs.h"
+
+void* broadcast_server(void* arg);
+broadcast_reply_t create_broadcast_reply();
 
 #endif

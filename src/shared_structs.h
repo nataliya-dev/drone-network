@@ -20,20 +20,15 @@
 #include <unistd.h>
 
 #define MAXBUF 8192
+#define MAXLINE 1024
+
 #define LISTENQ 50
 #define PORTNO 8080
 
-typedef struct routing_entry_s {
-  char *source_ip;
-  char *destination_ip;
-  size_t cost;
-  char *next_hop_ip;
-} routing_entry_t;
-
-typedef struct image_data_s {
-  char *source_ip;
-  char *image_name;
-} image_data_t;
+typedef struct broadcast_reply_s {
+  int drone_id;
+  char routing_table[MAXBUF];
+} broadcast_reply_t;
 
 typedef struct thread_data_s {
 } thread_data_t;

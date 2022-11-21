@@ -14,16 +14,35 @@
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
 
+broadcast_reply_t create_broadcast_reply() {
+  broadcast_reply_t reply;
+  reply.drone_id = 1;  // fill in with global id value
+  char filename[MAXLINE] = "routing_table.json";
+
+  printf("Opening file: %s\n", filename);
+  int file_desc = open(filename, O_RDONLY, S_IRUSR);
+  if (file_desc == -1) {
+    printf("Error opening file\n");
+  }
+
+  size_t frame_size = read(file_desc, reply.routing_table, MAXBUF);
+  printf("frame_size: %ld\n", frame_size);
+  if (frame_size == -1) {
+    printf("File read error\n");
+  }
+
+  return reply;
+}
+
 void *broadcast_server(void *arg) {
   int sock;
   // int yes = 1;
   struct sockaddr_in client_addr;
   struct sockaddr_in server_addr;
-  int addr_len;
-  int count;
+  socklen_t addr_len;
   int ret;
   fd_set readfd;
-  char buffer[1024];
+  char buffer[MAXLINE];
 
   sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (sock < 0) {
@@ -50,16 +69,17 @@ void *broadcast_server(void *arg) {
     ret = select(sock + 1, &readfd, NULL, NULL, 0);
     if (ret > 0) {
       if (FD_ISSET(sock, &readfd)) {
-        count = recvfrom(sock, buffer, 1024, 0, (struct sockaddr *)&client_addr,
-                         &addr_len);
+        recvfrom(sock, buffer, MAXLINE, 0, (struct sockaddr *)&client_addr,
+                 &addr_len);
         if (strstr(buffer, IP_FOUND)) {
           printf(
               "b_server:Client connection information:\n\t IP: %s, Port: %d\n",
               inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-          memcpy(buffer, IP_FOUND_ACK, strlen(IP_FOUND_ACK) + 1);
-          count = sendto(sock, buffer, strlen(buffer), 0,
-                         (struct sockaddr *)&client_addr, addr_len);
+          // memcpy(buffer, IP_FOUND_ACK, strlen(IP_FOUND_ACK) + 1);
+          broadcast_reply_t reply = create_broadcast_reply();
+          sendto(sock, &reply, sizeof(reply), 0,
+                 (struct sockaddr *)&client_addr, addr_len);
         }
       }
     }
