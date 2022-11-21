@@ -13,6 +13,8 @@
 #define IP_FOUND_ACK "IP_FOUND_ACK"
 #define PORT 9999
 
+extern int drone_number; 
+
 int virtual_switch(int destination_id) {
   int status = 0;
   char* filename = "virtual_switch.json";
@@ -76,7 +78,7 @@ void* broadcast_client(void* arg) {
         recvfrom(sock, &reply, sizeof(reply), 0, (struct sockaddr*)&server_addr,
                  &addr_len);
 
-        if (reply.drone_id == 1) {  // fill in with global id value
+        if (reply.drone_id == drone_number {  // fill in with global id value
           sleep(1);
           continue;
         }
