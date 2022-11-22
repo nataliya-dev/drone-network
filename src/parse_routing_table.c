@@ -8,6 +8,8 @@
 #include "shared_structs.h"
 
 int get_next_hop_id(int destination_id) {
+  pthread_mutex_lock(&routing_table_mtx);
+
   char *rt_filename = "routing_table.json";
   const cJSON *drone = NULL;
   const cJSON *drones = NULL;
@@ -60,6 +62,7 @@ int get_next_hop_id(int destination_id) {
 
 end:
   cJSON_Delete(table_json);
+  pthread_mutex_unlock(&routing_table_mtx);
   return next_hop;
 }
 

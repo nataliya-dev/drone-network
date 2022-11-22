@@ -17,6 +17,7 @@
 extern int drone_number;
 
 broadcast_reply_t create_broadcast_reply() {
+  pthread_mutex_lock(&routing_table_mtx);
   broadcast_reply_t reply;
   reply.drone_id = drone_number;  // fill in with global id value
   char filename[MAXLINE] = "routing_table.json";
@@ -32,6 +33,7 @@ broadcast_reply_t create_broadcast_reply() {
   if (frame_size == -1) {
     printf("File read error\n");
   }
+  pthread_mutex_unlock(&routing_table_mtx);
 
   return reply;
 }

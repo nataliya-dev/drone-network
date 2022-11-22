@@ -135,6 +135,7 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
 }
 
 int update_my_routing_table(char *neighbor_table, int neighbor_id) {
+  pthread_mutex_lock(&routing_table_mtx);
   // printf("update_my_routing_table\n");
   int status = -1;
   const cJSON *drone = NULL;
@@ -155,9 +156,23 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
     goto end;
   }
 
-  // char *string1 = cJSON_Print(my_routing_table);
+  cJSON *my_dest_entry = entry_exists(my_routing_table, neighbor_id);
+  if (my_dest_entry == NULL) {
+    printf("neighbor does not exist, adding to table\n");
+    my_routing_table =
+        add_to_table(my_routing_table, neighbor_id, neighbor_id, 1);
+  } else {
+    printf("neighbor exists, no need to add new one\n");
+  }
 
   drones = cJSON_GetObjectItemCaseSensitive(neighbor_json, "drones");
+
+  int neighbor_size = cJSON_GetArraySize(drones);
+  printf("neighbor_size %d\n", neighbor_size);
+  if (neighbor_size == 0) {
+    goto end;
+  }
+
   cJSON_ArrayForEach(drone, drones) {
     cJSON *destination = cJSON_GetObjectItemCaseSensitive(drone, "drone");
     cJSON *cost = cJSON_GetObjectItemCaseSensitive(drone, "cost");
@@ -198,20 +213,30 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
   status = 1;
 
 end:;
-  // write my table again
   char *table_str;
   table_str = cJSON_Print(my_routing_table);
+  // printf("===== my_routing_table \n%s\n", table_str);
   status = write_table_to_file(table_str);
   if (status == -1) {
     printf("Writing the data to file has failed\n");
   }
-  // printf("=====my_routing_table \n%s\n", string);
   cJSON_Delete(neighbor_json);
+  pthread_mutex_unlock(&routing_table_mtx);
   return status;
 }
 
 int write_table_to_file(char *string) {
+  int fd = open("routing_table.json", O_RDWR, S_IRUSR | S_IWUSR);
+  return write(fd, string, strlen(string));
+}
+
+void clear_routing_table() {
   int fd =
       open("routing_table.json", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  return write(fd, string, sizeof(string));
+  cJSON *table = cJSON_CreateObject();
+  cJSON *drones = cJSON_CreateArray();
+  cJSON_AddItemToObject(table, "drones", drones);
+  char *table_str;
+  table_str = cJSON_Print(table);
+  write(fd, table_str, strlen(table_str));
 }

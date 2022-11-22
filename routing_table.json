@@ -1,3 +1,11 @@
 {
-  "drones": []
+	"drones":	[{
+			"drone":	2,
+			"next-hop":	2,
+			"cost":	1
+		}, {
+			"drone":	3,
+			"next-hop":	2,
+			"cost":	2
+		}]
 }

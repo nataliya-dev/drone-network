@@ -17,6 +17,8 @@ int main(int argc, char** argv) {
   printf("Drone Number: %s\n", argv[1]);
   drone_number = atoi(argv[1]);
 
+  clear_routing_table();
+
   pthread_t thread1;
   pthread_t thread2;
   pthread_t thread3;
