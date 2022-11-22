@@ -23,16 +23,6 @@ char *create_routing_table(void) {
   if (monitor == NULL) {
     goto end;
   }
-#if 0
-    name = cJSON_CreateString("Awesome 4K");
-    if (name == NULL)
-    {
-        goto end;
-    }
-    /* after creation was successful, immediately add it to the monitor,
-     * thereby transferring ownership of the pointer to it */
-    cJSON_AddItemToObject(monitor, "name", name);
-#endif
 
   drones = cJSON_CreateArray();
   if (drones == NULL) {
@@ -79,9 +69,9 @@ end:
 }
 
 cJSON *get_my_routing_table_json() {
-  printf("get_my_routing_table_json\n");
+  // printf("get_my_routing_table_json\n");
   cJSON *my_table = NULL;
-  char *rt_filename = "routing_table_1.json";
+  char *rt_filename = "routing_table.json";
 
   // struct stat st;
   // stat(rt_filename, &st);
@@ -111,15 +101,15 @@ cJSON *get_my_routing_table_json() {
     return my_table;
   }
 
-  char *string = cJSON_Print(my_table);
-  printf("my_routing_table \n%s\n", string);
+  // char *string = cJSON_Print(my_table);
+  // printf("my_routing_table \n%s\n", string);
 
   return my_table;
 }
 
 cJSON *entry_exists(cJSON *my_routing_table, int drone_destination) {
   cJSON *entry = NULL;
-  cJSON *drone = NULL;
+  // cJSON *drone = NULL;
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
   cJSON_ArrayForEach(entry, drones) {
     cJSON *destination = cJSON_GetObjectItemCaseSensitive(entry, "drone");
@@ -145,7 +135,7 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
 }
 
 int update_my_routing_table(char *neighbor_table, int neighbor_id) {
-  printf("update_my_routing_table\n");
+  // printf("update_my_routing_table\n");
   int status = -1;
   const cJSON *drone = NULL;
   const cJSON *drones = NULL;
@@ -165,8 +155,7 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
     goto end;
   }
 
-  char *string1 = cJSON_Print(my_routing_table);
-  printf("+++ my_routing_table \n%s\n", string1);
+  // char *string1 = cJSON_Print(my_routing_table);
 
   drones = cJSON_GetObjectItemCaseSensitive(neighbor_json, "drones");
   cJSON_ArrayForEach(drone, drones) {
@@ -176,8 +165,8 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
     int drone_destination = destination->valueint;
     int drone_cost = cost->valueint;
 
-    printf("drone_destination %d\n", drone_destination);
-    printf("drone_cost %d\n", drone_cost);
+    // printf("drone_destination %d\n", drone_destination);
+    // printf("drone_cost %d\n", drone_cost);
 
     cJSON *my_dest_entry = entry_exists(my_routing_table, drone_destination);
     if (my_dest_entry == NULL) {
@@ -192,8 +181,8 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
     cJSON *my_hop = cJSON_GetObjectItemCaseSensitive(my_dest_entry, "next-hop");
     cJSON *my_cost = cJSON_GetObjectItemCaseSensitive(my_dest_entry, "cost");
 
-    printf("my_hop->valueint %d\n", my_hop->valueint);
-    printf("my_cost->valueint %d\n", my_cost->valueint);
+    // printf("my_hop->valueint %d\n", my_hop->valueint);
+    // printf("my_cost->valueint %d\n", my_cost->valueint);
 
     if (my_hop->valueint == neighbor_id) {
       my_hop->valueint = drone_cost + 1;
@@ -210,9 +199,19 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
 
 end:;
   // write my table again
-  char *string;
-  string = cJSON_Print(my_routing_table);
-  printf("=====my_routing_table \n%s\n", string);
+  char *table_str;
+  table_str = cJSON_Print(my_routing_table);
+  status = write_table_to_file(table_str);
+  if (status == -1) {
+    printf("Writing the data to file has failed\n");
+  }
+  // printf("=====my_routing_table \n%s\n", string);
   cJSON_Delete(neighbor_json);
   return status;
+}
+
+int write_table_to_file(char *string) {
+  int fd =
+      open("routing_table.json", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  return write(fd, string, sizeof(string));
 }

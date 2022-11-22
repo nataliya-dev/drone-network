@@ -8,7 +8,7 @@
 #include "shared_structs.h"
 
 int get_next_hop_id(int destination_id) {
-  char *rt_filename = "routing_table_1.json";
+  char *rt_filename = "routing_table.json";
   const cJSON *drone = NULL;
   const cJSON *drones = NULL;
   int next_hop = -1;

@@ -9,4 +9,5 @@ cJSON *entry_exists(cJSON *my_routing_table, int drone_destination);
 cJSON *get_my_routing_table_json();
 cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
                     int cost);
+int write_table_to_file(char *string);
 #endif
