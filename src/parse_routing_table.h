@@ -3,4 +3,5 @@
 
 int get_next_hop_id(int destination_id);
 int convert_to_drone_ip(int drone_id, char* drone_ip);
+int update_drone_ip_file(int drone_id, char *drone_ip);
 #endif
