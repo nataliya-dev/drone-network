@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 
 #include "b_client.h"
+#include "create_routing_table.h"
 #include "parse_virtual_switch.h"
 
 #define IP_FOUND "IP_FOUND"
@@ -98,6 +99,11 @@ void* broadcast_client(void* arg) {
         //          inet_ntoa(server_addr.sin_addr),
         //          htons(server_addr.sin_port));
         // }
+        if (update_my_routing_table(reply.routing_table, reply.drone_id) ==
+            -1) {
+          sleep(1);
+          continue;
+        }
       }
     }
     sleep(1);
