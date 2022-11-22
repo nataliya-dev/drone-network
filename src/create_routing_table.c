@@ -134,7 +134,7 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
   return my_routing_table;
 }
 
-int update_my_routing_table(char *neighbor_table, int neighbor_id) {
+int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
   pthread_mutex_lock(&routing_table_mtx);
   // printf("update_my_routing_table\n");
   int status = -1;
@@ -179,6 +179,10 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id) {
 
     int drone_destination = destination->valueint;
     int drone_cost = cost->valueint;
+
+    if (my_id == drone_destination) {
+      continue;
+    }
 
     // printf("drone_destination %d\n", drone_destination);
     // printf("drone_cost %d\n", drone_cost);

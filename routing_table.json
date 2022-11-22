@@ -7,5 +7,9 @@
 			"drone":	3,
 			"next-hop":	2,
 			"cost":	2
+		}, {
+			"drone":	1,
+			"next-hop":	2,
+			"cost":	2
 		}]
 }

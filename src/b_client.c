@@ -99,8 +99,8 @@ void* broadcast_client(void* arg) {
         //          inet_ntoa(server_addr.sin_addr),
         //          htons(server_addr.sin_port));
         // }
-        if (update_my_routing_table(reply.routing_table, reply.drone_id) ==
-            -1) {
+        if (update_my_routing_table(reply.routing_table, reply.drone_id,
+                                    drone_number) == -1) {
           sleep(1);
           continue;
         }
