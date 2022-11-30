@@ -244,3 +244,13 @@ void clear_routing_table() {
   table_str = cJSON_Print(table);
   write(fd, table_str, strlen(table_str));
 }
+
+void clear_drone_ip_table() {
+  int fd = open("drone_ip.json", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  cJSON *table = cJSON_CreateObject();
+  cJSON *drones = cJSON_CreateArray();
+  cJSON_AddItemToObject(table, "drones", drones);
+  char *table_str;
+  table_str = cJSON_Print(table);
+  write(fd, table_str, strlen(table_str));
+}

@@ -19,6 +19,8 @@ int main(int argc, char** argv) {
 
   clear_routing_table();
 
+  clear_drone_ip_table();
+
   pthread_t thread1;
   pthread_t thread2;
   pthread_t thread3;

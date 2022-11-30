@@ -11,4 +11,5 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
                     int cost);
 int write_table_to_file(char *string);
 void clear_routing_table();
+void clear_drone_ip_table();
 #endif
