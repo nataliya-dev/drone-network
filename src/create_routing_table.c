@@ -134,6 +134,46 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
   return my_routing_table;
 }
 
+cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
+  cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
+  const cJSON *drone = NULL;
+
+  size_t max_num_drones = 10;
+  double to_remove[max_num_drones];
+  for (size_t i = 0; i < max_num_drones; i++) {
+    to_remove[i] = -1;
+  }
+
+  int i = 0;
+  cJSON_ArrayForEach(drone, drones) {
+    cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
+    if (next_hop->valueint == drone_number) {
+      printf("going to remove drone_number %u\n", drone_number);
+      to_remove[i] = drone_number;
+      i++;
+    }
+  }
+
+  for (size_t i = 0; i < max_num_drones; i++) {
+    printf("deleting from array %u\n", drone_number);
+    int drone = to_remove[i];
+    cJSON_DeleteItemFromArray(drones, drone);
+  }
+
+  return my_routing_table;
+}
+
+cJSON *remove_inactive(cJSON *my_routing_table) {
+  // for all items in neighbors array
+  // get drone number
+  // get timeout value
+  // check if current time - last seen time is greater than theshold
+  // if yes, then remove_from_table()
+  // if no, then continue
+
+  return my_routing_table;
+}
+
 int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
   pthread_mutex_lock(&routing_table_mtx);
   // printf("update_my_routing_table\n");
