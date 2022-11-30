@@ -66,8 +66,7 @@ end:
   return next_hop;
 }
 
-int update_drone_ip_file(int drone_id, char *drone_ip)
-{
+int update_drone_ip_file(int drone_id, char *drone_ip) {
   char *rt_filename = "drone_ip.json";
   const cJSON *drone = NULL;
   cJSON *drones = NULL;
@@ -112,14 +111,19 @@ int update_drone_ip_file(int drone_id, char *drone_ip)
 
     if (drone_id == cur_drone_num) {
       ip->valuestring = drone_ip;
+
+      char *updatedJsonString = cJSON_Print(table_json);
+
+      file_desc = open(rt_filename, O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR);
+      write(file_desc, updatedJsonString, strlen(updatedJsonString));
+
       status = 1;
       goto end;
     }
   }
 
   /*if the drone number doesnot exist we need to add it*/
-  if(status != 1)
-  {
+  if (status != 1) {
     printf("inside adding new node to json file \n");
 
     cJSON *drone = NULL;
@@ -127,7 +131,6 @@ int update_drone_ip_file(int drone_id, char *drone_ip)
     cJSON *json_drone_ip = NULL;
 
     drone = cJSON_CreateObject();
-  
 
     json_drone_id = cJSON_CreateNumber(drone_id);
     cJSON_AddItemToObject(drone, "number", json_drone_id);
@@ -137,9 +140,9 @@ int update_drone_ip_file(int drone_id, char *drone_ip)
 
     cJSON_AddItemToArray(drones, drone);
 
-    char * updatedJsonString = cJSON_Print(table_json);
+    char *updatedJsonString = cJSON_Print(table_json);
 
-    file_desc = open(rt_filename, O_RDWR | O_TRUNC , S_IRUSR | S_IWUSR);
+    file_desc = open(rt_filename, O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR);
     write(file_desc, updatedJsonString, strlen(updatedJsonString));
   }
 
@@ -149,7 +152,7 @@ end:
 
   pthread_mutex_unlock(&drone_ip_table_mutex);
 
-  return status;  
+  return status;
 }
 
 int convert_to_drone_ip(int drone_id, char *drone_ip) {
