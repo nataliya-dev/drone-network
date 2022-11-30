@@ -1,15 +1,25 @@
 {
-	"drones":	[{
-			"drone":	2,
-			"next-hop":	2,
-			"cost":	1
-		}, {
-			"drone":	3,
-			"next-hop":	2,
-			"cost":	2
-		}, {
-			"drone":	1,
-			"next-hop":	2,
-			"cost":	2
-		}]
+  "drones": [
+    {
+      "drone": 2,
+      "next-hop": 2,
+      "cost": 1
+    },
+    {
+      "drone": 3,
+      "next-hop": 2,
+      "cost": 2
+    },
+    {
+      "drone": 1,
+      "next-hop": 2,
+      "cost": 2
+    }
+  ],
+  "neighbors": [
+    {
+      "drone": 1,
+      "last-seen": 20
+    }
+  ]
 }
