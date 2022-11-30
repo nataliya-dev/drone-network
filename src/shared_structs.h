@@ -28,6 +28,8 @@
 #define DESTINATION_DRONE_ID 3
 
 pthread_mutex_t routing_table_mtx;
+pthread_mutex_t drone_ip_table_mutex;
+
 typedef struct broadcast_reply_s {
   int drone_id;
   char routing_table[MAXBUF];

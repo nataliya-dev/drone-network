@@ -97,7 +97,8 @@ void* broadcast_client(void* arg) {
                reply.routing_table);
 
         char *ipStr = inet_ntoa(server_addr.sin_addr);
-        //update_drone_ip_file(reply.drone_id, ipStr);
+
+        update_drone_ip_file(reply.drone_id, ipStr);
         // if (strstr(buffer, IP_FOUND_ACK)) {
         //   printf("\tb_client:found server IP is %s, Port is %d\n",
         //          inet_ntoa(server_addr.sin_addr),

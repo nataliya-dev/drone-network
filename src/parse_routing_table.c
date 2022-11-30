@@ -70,8 +70,11 @@ int update_drone_ip_file(int drone_id, char *drone_ip)
 {
   char *rt_filename = "drone_ip.json";
   const cJSON *drone = NULL;
-  const cJSON *drones = NULL;
+  cJSON *drones = NULL;
   int status = -1;
+
+  /*to acquire mutex to avoid corruption of drone ip json*/
+  pthread_mutex_lock(&drone_ip_table_mutex);
 
   int file_desc = open(rt_filename, O_RDONLY, S_IRUSR);
   if (file_desc == -1) {
@@ -114,6 +117,7 @@ int update_drone_ip_file(int drone_id, char *drone_ip)
     }
   }
 
+  /*if the drone number doesnot exist we need to add it*/
   if(status != 1)
   {
     printf("inside adding new node to json file \n");
@@ -143,7 +147,8 @@ end:
 
   printf("json: %s\n", cJSON_Print(table_json));
 
-  printf("end of function \n");
+  pthread_mutex_unlock(&drone_ip_table_mutex);
+
   return status;  
 }
 
@@ -152,6 +157,9 @@ int convert_to_drone_ip(int drone_id, char *drone_ip) {
   const cJSON *drone = NULL;
   const cJSON *drones = NULL;
   int status = -1;
+
+  /*to acquire mutex to avoid corruption of drone ip json*/
+  pthread_mutex_lock(&drone_ip_table_mutex);
 
   int file_desc = open(rt_filename, O_RDONLY, S_IRUSR);
   if (file_desc == -1) {
@@ -199,5 +207,8 @@ int convert_to_drone_ip(int drone_id, char *drone_ip) {
 
 end:
   cJSON_Delete(table_json);
+
+  pthread_mutex_unlock(&drone_ip_table_mutex);
+
   return status;
 }
