@@ -148,7 +148,7 @@ int update_drone_ip_file(int drone_id, char *drone_ip) {
 
 end:
 
-  printf("json: %s\n", cJSON_Print(table_json));
+  // printf("json: %s\n", cJSON_Print(table_json));
 
   pthread_mutex_unlock(&drone_ip_table_mutex);
 

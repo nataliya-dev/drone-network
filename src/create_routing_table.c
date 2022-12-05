@@ -139,15 +139,27 @@ cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
   const cJSON *drone = NULL;
 
+  const int max_num_drones = 10;
+  int to_remove[max_num_drones];
+  for (size_t i = 0; i < max_num_drones; i++) {
+    to_remove[i] = -1;
+  }
+
   int i = 0;
   cJSON_ArrayForEach(drone, drones) {
     cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
     if (next_hop->valueint == drone_number) {
       printf("going to remove drone_number %u\n", drone_number);
-      cJSON_DeleteItemFromArray(drones, i);
-      continue;
+      to_remove[i] = 1;
     }
     i++;
+  }
+
+  for (size_t i = 0; i < max_num_drones; i++) {
+    int status = to_remove[i];
+    if (status == 1) {
+      cJSON_DeleteItemFromArray(drones, i);
+    }
   }
 
   return my_routing_table;
@@ -156,30 +168,36 @@ cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
 cJSON *update_last_seen(cJSON *my_routing_table, int drone_number) {
   cJSON *drones =
       cJSON_GetObjectItemCaseSensitive(my_routing_table, "neighbors");
-  const cJSON *neighbor = NULL;
 
   int is_added = -1;
+  const cJSON *neighbor = NULL;
+  cJSON *drone = NULL;
+  cJSON *last_seen = NULL;
 
   cJSON_ArrayForEach(neighbor, drones) {
-    cJSON *drone = cJSON_GetObjectItemCaseSensitive(neighbor, "drone");
-    cJSON *last_seen = cJSON_GetObjectItemCaseSensitive(neighbor, "last-seen");
+    drone = cJSON_GetObjectItemCaseSensitive(neighbor, "drone");
+    last_seen = cJSON_GetObjectItemCaseSensitive(neighbor, "last-seen");
     if (drone->valueint == drone_number) {
-      printf("going to update drone last seen value %u\n", drone_number);
-      last_seen->valueint = time(NULL);  // minus start time
+      printf("updating last seen value for drone num %u\n", drone_number);
+      printf("last_seen->valueint %u\n", last_seen->valueint);
+      int number = 10;
+      last_seen->valueint = number;
+      printf("last_seen->valueint %u\n", last_seen->valueint);
       is_added = 1;
     }
   }
 
-  if (is_added == 1) {
-    return my_routing_table;
+  if (is_added == -1) {
+    printf("adding new last seen value for drone num %u\n", drone_number);
+    drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "neighbors");
+    cJSON *new_neighbor = cJSON_CreateObject();
+    cJSON *item = cJSON_CreateNumber(drone_number);
+    cJSON_AddItemToObject(new_neighbor, "drone", item);
+    item = cJSON_CreateNumber(15);
+    cJSON_AddItemToObject(new_neighbor, "last-seen", item);
+    cJSON_AddItemToArray(drones, new_neighbor);
   }
 
-  cJSON *new_neighbor = cJSON_CreateObject();
-  cJSON *item = cJSON_CreateNumber(drone_number);
-  cJSON_AddItemToObject(new_neighbor, "drone", item);
-  item = cJSON_CreateNumber(time(NULL));
-  cJSON_AddItemToObject(new_neighbor, "last-seen", item);
-  cJSON_AddItemToArray(drones, new_neighbor);
   return my_routing_table;
 }
 
@@ -230,7 +248,7 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
   drones = cJSON_GetObjectItemCaseSensitive(neighbor_json, "drones");
 
   int neighbor_size = cJSON_GetArraySize(drones);
-  printf("neighbor_size %d\n", neighbor_size);
+  printf("num drones in routing array %d\n", neighbor_size);
   if (neighbor_size == 0) {
     goto end;
   }
@@ -281,7 +299,7 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
 end:;
   char *table_str;
   table_str = cJSON_Print(my_routing_table);
-  // printf("===== my_routing_table \n%s\n", table_str);
+  printf("===== my_routing_table \n%s\n", table_str);
   status = write_table_to_file(table_str);
   if (status == -1) {
     printf("Writing the data to file has failed\n");
@@ -301,7 +319,9 @@ void clear_routing_table() {
       open("routing_table.json", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   cJSON *table = cJSON_CreateObject();
   cJSON *drones = cJSON_CreateArray();
+  cJSON *neighbors = cJSON_CreateArray();
   cJSON_AddItemToObject(table, "drones", drones);
+  cJSON_AddItemToObject(table, "neighbors", neighbors);
   char *table_str;
   table_str = cJSON_Print(table);
   write(fd, table_str, strlen(table_str));
