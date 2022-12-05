@@ -3,6 +3,7 @@
 #include "create_routing_table.h"
 
 #include <stdio.h>
+#include <time.h>
 
 char *create_routing_table(void) {
   const unsigned int routing_parameter_values[2][3] = {
@@ -138,28 +139,47 @@ cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
   const cJSON *drone = NULL;
 
-  size_t max_num_drones = 10;
-  double to_remove[max_num_drones];
-  for (size_t i = 0; i < max_num_drones; i++) {
-    to_remove[i] = -1;
-  }
-
   int i = 0;
   cJSON_ArrayForEach(drone, drones) {
     cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
     if (next_hop->valueint == drone_number) {
       printf("going to remove drone_number %u\n", drone_number);
-      to_remove[i] = drone_number;
-      i++;
+      cJSON_DeleteItemFromArray(drones, i);
+      continue;
+    }
+    i++;
+  }
+
+  return my_routing_table;
+}
+
+cJSON *update_last_seen(cJSON *my_routing_table, int drone_number) {
+  cJSON *drones =
+      cJSON_GetObjectItemCaseSensitive(my_routing_table, "neighbors");
+  const cJSON *neighbor = NULL;
+
+  int is_added = -1;
+
+  cJSON_ArrayForEach(neighbor, drones) {
+    cJSON *drone = cJSON_GetObjectItemCaseSensitive(neighbor, "drone");
+    cJSON *last_seen = cJSON_GetObjectItemCaseSensitive(neighbor, "last-seen");
+    if (drone->valueint == drone_number) {
+      printf("going to update drone last seen value %u\n", drone_number);
+      last_seen->valueint = time(NULL);  // minus start time
+      is_added = 1;
     }
   }
 
-  for (size_t i = 0; i < max_num_drones; i++) {
-    printf("deleting from array %u\n", drone_number);
-    int drone = to_remove[i];
-    cJSON_DeleteItemFromArray(drones, drone);
+  if (is_added == 1) {
+    return my_routing_table;
   }
 
+  cJSON *new_neighbor = cJSON_CreateObject();
+  cJSON *item = cJSON_CreateNumber(drone_number);
+  cJSON_AddItemToObject(new_neighbor, "drone", item);
+  item = cJSON_CreateNumber(time(NULL));
+  cJSON_AddItemToObject(new_neighbor, "last-seen", item);
+  cJSON_AddItemToArray(drones, new_neighbor);
   return my_routing_table;
 }
 
@@ -195,6 +215,8 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
     printf("error get_my_routing_table_json\n");
     goto end;
   }
+
+  my_routing_table = update_last_seen(my_routing_table, neighbor_id);
 
   cJSON *my_dest_entry = entry_exists(my_routing_table, neighbor_id);
   if (my_dest_entry == NULL) {
