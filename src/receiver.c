@@ -26,6 +26,7 @@ void *run_receiver(void *arg) {
 void *thread(void *vargp) {
   int connfd = *((int *)vargp);
   pthread_detach(pthread_self());
+  printf(" thread id  = %ld", pthread_self());
   free(vargp);
 
   handleMessages(connfd);
@@ -69,7 +70,7 @@ int open_listenfd(int port) {
   return listenfd;
 } /* end open_listenfd */
 
-void move_recvd_file() {
+void move_recvd_file(char file_name) {
   printf("Moving received file\n");
   // char old_name[] = "rcvd.jpg";
   // char folder_path[10] = "./imgs";
@@ -82,7 +83,7 @@ void move_recvd_file() {
   // printf("rename ret %d\n", ret);
 
   char command[50];
-  strcpy(command, "cp rcvd.jpg imgs/img.jpg");
+  strcpy(command, "cp file_name imgs/file_name");
   system(command);
 
   // if (ret == 0) {
@@ -92,12 +93,18 @@ void move_recvd_file() {
   // }
 }
 
+
 void handleMessages(int connfd) {
   size_t readRetVal;
   size_t writeRetVal;
+  int image_count = 0;
   char buffer[MAXBUF];
 
-  int fd = open("rcvd.jpg", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
+  char file_name[50];
+  sprintf(file_name, "%d_rcvd_%ld.jpg", image_count, pthread_self());
+  image_count++;
+
+  int fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
                 S_IRUSR | S_IWUSR);
 
   struct timeval tv;
@@ -118,5 +125,5 @@ void handleMessages(int connfd) {
 
   sleep(2);
 
-  move_recvd_file();
+  move_recvd_file(file_name);
 }
