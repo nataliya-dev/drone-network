@@ -26,7 +26,7 @@ void *run_receiver(void *arg) {
 void *thread(void *vargp) {
   int connfd = *((int *)vargp);
   pthread_detach(pthread_self());
-  printf(" thread id  = %ld", pthread_self());
+  printf(" thread id  = %ld \n", pthread_self());
   free(vargp);
 
   handleMessages(connfd);
@@ -72,6 +72,7 @@ int open_listenfd(int port) {
 
 void move_recvd_file(char *file_name) {
   printf("Moving received file\n");
+
   // char old_name[] = "rcvd.jpg";
   // char folder_path[10] = "./imgs";
   // char image_name[10] = "img_";
@@ -82,8 +83,9 @@ void move_recvd_file(char *file_name) {
   // int ret = rename(old_name, new_name);
   // printf("rename ret %d\n", ret);
 
-  char command[50];
-  strcpy(command, "cp file_name imgs/file_name");
+  char command[100];
+  sprintf(command,"cp %s imgs/%s",file_name,file_name);
+  //strcpy(command, "cp file_name imgs/file_name");
   system(command);
 
   // if (ret == 0) {
