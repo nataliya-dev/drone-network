@@ -8,8 +8,8 @@
 
 #include "b_client.h"
 #include "create_routing_table.h"
-#include "parse_virtual_switch.h"
 #include "parse_routing_table.h"
+#include "parse_virtual_switch.h"
 
 #define IP_FOUND "IP_FOUND"
 #define IP_FOUND_ACK "IP_FOUND_ACK"
@@ -93,10 +93,12 @@ void* broadcast_client(void* arg) {
           continue;
         }
 
+        remove_inactive();
+
         printf("\tb_client:recvmsg reply.routing_table is %s\n",
                reply.routing_table);
 
-        char *ipStr = inet_ntoa(server_addr.sin_addr);
+        char* ipStr = inet_ntoa(server_addr.sin_addr);
 
         update_drone_ip_file(reply.drone_id, ipStr);
         // if (strstr(buffer, IP_FOUND_ACK)) {

@@ -14,7 +14,6 @@ void clear_routing_table();
 void clear_drone_ip_table();
 
 cJSON *remove_from_table(cJSON *my_routing_table, int drone_number);
-cJSON *remove_inactive(cJSON *my_routing_table);
 cJSON *update_last_seen(cJSON *my_routing_table, int drone_number);
-
+void remove_inactive(void);
 #endif

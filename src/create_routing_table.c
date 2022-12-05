@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <time.h>
 
+int thresholdDiffTime = 25;  // in seconds
+
 char *create_routing_table(void) {
   const unsigned int routing_parameter_values[2][3] = {
       {3, 2, 2},
@@ -201,7 +203,7 @@ cJSON *update_last_seen(cJSON *my_routing_table, int drone_number) {
   return my_routing_table;
 }
 
-cJSON *remove_inactive(cJSON *my_routing_table) {
+void remove_inactive(void) {
   // for all items in neighbors array
   // get drone number
   // get timeout value
@@ -209,7 +211,57 @@ cJSON *remove_inactive(cJSON *my_routing_table) {
   // if yes, then remove_from_table()
   // if no, then continue
 
-  return my_routing_table;
+  char *rt_filename = "routing_table.json";
+  const cJSON *drone = NULL;
+  cJSON *neighbors = NULL;
+
+  pthread_mutex_lock(&routing_table_mtx);
+
+  int file_desc = open(rt_filename, O_RDONLY, S_IRUSR);
+  if (file_desc == -1) {
+    printf("error opening file %s\n", rt_filename);
+    goto end;
+  }
+
+  char data_buffer[MAXBUF];
+  size_t frame_size = read(file_desc, data_buffer, MAXBUF);
+  if (frame_size <= 0) {
+    printf("unable to read file %s\n", rt_filename);
+    goto end;
+  }
+
+  cJSON *table_json = cJSON_Parse(data_buffer);
+  if (table_json == NULL) {
+    const char *error_ptr = cJSON_GetErrorPtr();
+    if (error_ptr != NULL) {
+      fprintf(stderr, "Error before: %s\n", error_ptr);
+    }
+    goto end;
+  }
+
+  neighbors = cJSON_GetObjectItemCaseSensitive(table_json, "neighbors");
+
+  cJSON_ArrayForEach(drone, neighbors) {
+    cJSON *drone_ptr = cJSON_GetObjectItemCaseSensitive(drone, "drone");
+
+    cJSON *lastSeenTime_ptr =
+        cJSON_GetObjectItemCaseSensitive(drone, "last-seen");
+
+    int cur_drone_num = drone_ptr->valueint;
+    int last_seen_time = lastSeenTime_ptr->valueint;
+
+    int current_time = time(NULL);
+
+    printf("cur_drone_num = %d\n", cur_drone_num);
+    printf("lastSeenTIme = %d\n", last_seen_time);
+
+    if ((current_time - last_seen_time) > thresholdDiffTime) {
+      remove_from_table(table_json, cur_drone_num);
+    }
+  }
+
+end:
+  pthread_mutex_unlock(&routing_table_mtx);
 }
 
 int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
