@@ -70,7 +70,7 @@ int open_listenfd(int port) {
   return listenfd;
 } /* end open_listenfd */
 
-void move_recvd_file(char file_name) {
+void move_recvd_file(char *file_name) {
   printf("Moving received file\n");
   // char old_name[] = "rcvd.jpg";
   // char folder_path[10] = "./imgs";
@@ -102,6 +102,7 @@ void handleMessages(int connfd) {
 
   char file_name[50];
   sprintf(file_name, "%d_rcvd_%ld.jpg", image_count, pthread_self());
+  printf("File name is: %s.", file_name);
   image_count++;
 
   int fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND,
