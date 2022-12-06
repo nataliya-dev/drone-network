@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 
-int thresholdDiffTime = 25;  // in seconds
+int thresholdDiffTime = 5;  // in seconds
 
 char *create_routing_table(void) {
   const unsigned int routing_parameter_values[2][3] = {
@@ -182,8 +182,8 @@ cJSON *update_last_seen(cJSON *my_routing_table, int drone_number) {
     if (drone->valueint == drone_number) {
       printf("updating last seen value for drone num %u\n", drone_number);
       printf("last_seen->valueint %u\n", last_seen->valueint);
-      int number = 10;
-      last_seen->valueint = number;
+      int number = time(NULL);
+      cJSON_SetNumberValue(last_seen, number);
       printf("last_seen->valueint %u\n", last_seen->valueint);
       is_added = 1;
     }
@@ -195,7 +195,8 @@ cJSON *update_last_seen(cJSON *my_routing_table, int drone_number) {
     cJSON *new_neighbor = cJSON_CreateObject();
     cJSON *item = cJSON_CreateNumber(drone_number);
     cJSON_AddItemToObject(new_neighbor, "drone", item);
-    item = cJSON_CreateNumber(15);
+    int number = time(NULL);
+    item = cJSON_CreateNumber(number);
     cJSON_AddItemToObject(new_neighbor, "last-seen", item);
     cJSON_AddItemToArray(drones, new_neighbor);
   }
@@ -254,6 +255,8 @@ void remove_inactive(void) {
 
     printf("cur_drone_num = %d\n", cur_drone_num);
     printf("lastSeenTIme = %d\n", last_seen_time);
+    printf("(current_time - last_seen_time) = %d\n",
+           (current_time - last_seen_time));
 
     if ((current_time - last_seen_time) > thresholdDiffTime) {
       remove_from_table(table_json, cur_drone_num);
@@ -286,7 +289,10 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
     goto end;
   }
 
-  my_routing_table = update_last_seen(my_routing_table, neighbor_id);
+  cJSON *my_routing_table1 = update_last_seen(my_routing_table, neighbor_id);
+
+  char *table_temp = cJSON_Print(my_routing_table1);
+  printf("after update my_routing_table \n%s\n", table_temp);
 
   cJSON *my_dest_entry = entry_exists(my_routing_table, neighbor_id);
   if (my_dest_entry == NULL) {
@@ -336,13 +342,13 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
     // printf("my_cost->valueint %d\n", my_cost->valueint);
 
     if (my_hop->valueint == neighbor_id) {
-      my_hop->valueint = drone_cost + 1;
+      cJSON_SetNumberValue(my_hop, drone_cost + 1);
       continue;
     }
 
     if (my_cost->valueint > drone_cost + 1) {
-      my_cost->valueint = drone_cost + 1;
-      my_hop->valueint = neighbor_id;
+      cJSON_SetNumberValue(my_cost, drone_cost + 1);
+      cJSON_SetNumberValue(my_hop, neighbor_id);
       continue;
     }
   }
