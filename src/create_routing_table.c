@@ -123,6 +123,24 @@ cJSON *entry_exists(cJSON *my_routing_table, int drone_destination) {
   return entry;
 }
 
+cJSON *neighbor_entry_exists(cJSON *my_routing_table, int drone_destination) {
+  cJSON *entry = NULL;
+  // cJSON *drone = NULL;
+  cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
+  cJSON_ArrayForEach(entry, drones) {
+    cJSON *destination = cJSON_GetObjectItemCaseSensitive(entry, "drone");
+    cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(entry, "next-hop");
+    cJSON *cost = cJSON_GetObjectItemCaseSensitive(entry, "cost");
+
+    if (destination->valueint == drone_destination) {
+      cJSON_SetNumberValue(next_hop, drone_destination);
+      cJSON_SetNumberValue(cost, 1);
+      return entry;
+    }
+  }
+  return entry;
+}
+
 cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
                     int cost) {
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
@@ -139,30 +157,39 @@ cJSON *add_to_table(cJSON *my_routing_table, int destination, int nexthop,
 
 cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
-  const cJSON *drone = NULL;
+  cJSON *drone = NULL;
 
-  const int max_num_drones = 10;
-  int to_remove[max_num_drones];
-  for (size_t i = 0; i < max_num_drones; i++) {
-    to_remove[i] = -1;
-  }
+  cJSON_DeleteItemFromArray(drones, 0);
 
-  int i = 0;
-  cJSON_ArrayForEach(drone, drones) {
-    cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
-    if (next_hop->valueint == drone_number) {
-      printf("going to remove drone_number %u\n", drone_number);
-      to_remove[i] = 1;
-    }
-    i++;
-  }
+  // const int max_num_drones = 10;
+  // int to_remove[max_num_drones];
+  // for (size_t i = 0; i < max_num_drones; i++) {
+  //   to_remove[i] = -1;
+  // }
 
-  for (size_t i = 0; i < max_num_drones; i++) {
-    int status = to_remove[i];
-    if (status == 1) {
-      cJSON_DeleteItemFromArray(drones, i);
-    }
-  }
+  // int i = 0;
+  // cJSON_ArrayForEach(drone, drones) {
+  //   cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
+  //   if (next_hop->valueint == drone_number) {
+  //     printf("deleting from array %ld\n", i);
+  //     printf("going to remove drone_number %u\n", drone_number);
+  //     to_remove[i] = 1;
+  //     break;
+  //   }
+  //   i++;
+  // }
+
+  // cJSON_Delete(drone);
+
+  // for (size_t i = 0; i < max_num_drones; i++) {
+  //   int status = to_remove[i];
+  //   printf("status %ld: %d\n", i, status);
+  //   if (status == 1) {
+  //     printf("deleting from array %ld\n", i);
+  //     cJSON_DeleteItemFromArray(drones, i);
+  //     break;
+  //   }
+  // }
 
   return my_routing_table;
 }
@@ -263,7 +290,16 @@ void remove_inactive(void) {
     }
   }
 
-end:
+end:;
+
+  char *table_str;
+  table_str = cJSON_Print(table_json);
+  printf("===== table_json \n%s\n", table_str);
+  int status = write_table_to_file(table_str);
+  if (status == -1) {
+    printf("Writing the data to file has failed\n");
+  }
+
   pthread_mutex_unlock(&routing_table_mtx);
 }
 
@@ -289,12 +325,9 @@ int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id) {
     goto end;
   }
 
-  cJSON *my_routing_table1 = update_last_seen(my_routing_table, neighbor_id);
+  my_routing_table = update_last_seen(my_routing_table, neighbor_id);
 
-  char *table_temp = cJSON_Print(my_routing_table1);
-  printf("after update my_routing_table \n%s\n", table_temp);
-
-  cJSON *my_dest_entry = entry_exists(my_routing_table, neighbor_id);
+  cJSON *my_dest_entry = neighbor_entry_exists(my_routing_table, neighbor_id);
   if (my_dest_entry == NULL) {
     printf("neighbor does not exist, adding to table\n");
     my_routing_table =

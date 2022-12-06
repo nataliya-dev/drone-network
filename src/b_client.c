@@ -72,6 +72,8 @@ void* broadcast_client(void* arg) {
     FD_ZERO(&readfd);
     FD_SET(sock, &readfd);
 
+    remove_inactive();
+
     ret = select(sock + 1, &readfd, NULL, NULL, NULL);
 
     if (ret > 0) {
@@ -92,8 +94,6 @@ void* broadcast_client(void* arg) {
           sleep(1);
           continue;
         }
-
-        remove_inactive();
 
         printf("\tb_client:recvmsg reply.routing_table is %s\n",
                reply.routing_table);
