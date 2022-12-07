@@ -84,7 +84,7 @@ void move_recvd_file(char *file_name) {
   // printf("rename ret %d\n", ret);
 
   char command[100];
-  sprintf(command,"cp %s imgs/%s",file_name,file_name);
+  sprintf(command,"mv %s imgs/%s",file_name,file_name);
   //strcpy(command, "cp file_name imgs/file_name");
   system(command);
 
