@@ -159,37 +159,33 @@ cJSON *remove_from_table(cJSON *my_routing_table, int drone_number) {
   cJSON *drones = cJSON_GetObjectItemCaseSensitive(my_routing_table, "drones");
   cJSON *drone = NULL;
 
-  cJSON_DeleteItemFromArray(drones, 0);
+  const int max_num_drones = 10;
+  int to_remove[max_num_drones];
+  for (size_t i = 0; i < max_num_drones; i++) {
+    to_remove[i] = -1;
+  }
 
-  // const int max_num_drones = 10;
-  // int to_remove[max_num_drones];
-  // for (size_t i = 0; i < max_num_drones; i++) {
-  //   to_remove[i] = -1;
-  // }
+  int i = 0;
+  cJSON_ArrayForEach(drone, drones) {
+    cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
+    if (next_hop->valueint == drone_number) {
+      printf("deleting from array %d\n", i);
+      printf("going to remove drone_number %u\n", drone_number);
+      to_remove[i] = 1;
+      break;
+    }
+    i++;
+  }
 
-  // int i = 0;
-  // cJSON_ArrayForEach(drone, drones) {
-  //   cJSON *next_hop = cJSON_GetObjectItemCaseSensitive(drone, "next-hop");
-  //   if (next_hop->valueint == drone_number) {
-  //     printf("deleting from array %ld\n", i);
-  //     printf("going to remove drone_number %u\n", drone_number);
-  //     to_remove[i] = 1;
-  //     break;
-  //   }
-  //   i++;
-  // }
-
-  // cJSON_Delete(drone);
-
-  // for (size_t i = 0; i < max_num_drones; i++) {
-  //   int status = to_remove[i];
-  //   printf("status %ld: %d\n", i, status);
-  //   if (status == 1) {
-  //     printf("deleting from array %ld\n", i);
-  //     cJSON_DeleteItemFromArray(drones, i);
-  //     break;
-  //   }
-  // }
+  for (size_t i = 0; i < max_num_drones; i++) {
+    int status = to_remove[i];
+    // printf("status %ld: %d\n", i, status);
+    if (status == 1) {
+      printf("deleting from array %ld\n", i);
+      cJSON_DeleteItemFromArray(drones, i);
+      break;
+    }
+  }
 
   return my_routing_table;
 }
@@ -291,10 +287,10 @@ void remove_inactive(void) {
   }
 
 end:;
-
+  clear_routing_table();
   char *table_str;
   table_str = cJSON_Print(table_json);
-  printf("===== table_json \n%s\n", table_str);
+  // printf("===== table_json \n%s\n", table_str);
   int status = write_table_to_file(table_str);
   if (status == -1) {
     printf("Writing the data to file has failed\n");
