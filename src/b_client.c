@@ -113,6 +113,6 @@ void* broadcast_client(void* arg) {
         }
       }
     }
-    sleep(THREAD_SLEEP_TIME_S);
+    // sleep(THREAD_SLEEP_TIME_S);
   }
 }

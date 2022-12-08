@@ -1,25 +1,22 @@
 {
-  "drones": [
-    {
-      "drone": 2,
-      "next-hop": 2,
-      "cost": 1
-    },
-    {
-      "drone": 3,
-      "next-hop": 2,
-      "cost": 2
-    },
-    {
-      "drone": 1,
-      "next-hop": 2,
-      "cost": 2
-    }
-  ],
-  "neighbors": [
-    {
-      "drone": 1,
-      "last-seen": 20
-    }
-  ]
+	"drones":	[{
+			"drone":	2,
+			"next-hop":	2,
+			"cost":	1
+		}, {
+			"drone":	3,
+			"next-hop":	3,
+			"cost":	1
+		}, {
+			"drone":	1,
+			"next-hop":	2,
+			"cost":	2
+		}],
+	"neighbors":	[{
+			"drone":	2,
+			"last-seen":	1670470035
+		}, {
+			"drone":	3,
+			"last-seen":	1670470025
+		}]
 }

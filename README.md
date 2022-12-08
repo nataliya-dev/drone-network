@@ -78,5 +78,24 @@ Then you can run the following command on each machine. Make sure the drone numb
 - MAX_TIME_NEIGHBOR_SILENT : located in shared_structs.h and will define, in seconds, what is the maximum time that one drone can hear nothing from another drone. When this threshold is exceeded then the drone will updated its routing table such that any entries that include the silent drone as next-hope get deleted.
 
 ## Results
-- We have tested with several configurations...
+### Code has been tested with various testing topologies :-
+#### With three drones 1, 2 and 3 placed in linear position as depicted in the image below:
+![Image](final_report_imgs/Linear_drone.drawio.png)
 
+- This video demonstrates the transfer of image from drone 1 to drone 2 and finally to drone 3: [linear_transfer_1_2_3](https://drive.google.com/drive/folders/1Z6mlZ10ViU_TeDT_nSIIZ9FK4-VjXCPe)
+
+- This video demonstrates the dynamic updating of Routing table in this linear transfer:
+[Routing table updating](https://drive.google.com/drive/folders/1Z6mlZ10ViU_TeDT_nSIIZ9FK4-VjXCPe)
+
+- This video demonstrates the dynamic updating of drone_ip.json file:
+[drone_ip_update](https://drive.google.com/drive/folders/1Z6mlZ10ViU_TeDT_nSIIZ9FK4-VjXCPe)
+
+#### When drone 2 disappears from this linear network, as depicted in the image below:
+![Image](final_report_imgs/Drifted_linear_drone.drawio.png)
+
+- Consequently, this video demonstrates the updating of routing table on disappearance of drone 2: [linear_network_drone_2_disappearing](https://drive.google.com/drive/folders/1Z6mlZ10ViU_TeDT_nSIIZ9FK4-VjXCPe)
+
+#### Considering another scenario when a linear network of drone 1,2,4 and 3 has a new entry. The drone 5 is a lower cost path to destination drone 3 from source drone 1. The image below depicts the same scenario:
+![Image](final_report_imgs/Linear_drone_5_came_in.drawio.png)
+
+- This video demonstrates the above mentioned scenario: [drone_5_appearing](https://drive.google.com/drive/folders/1Z6mlZ10ViU_TeDT_nSIIZ9FK4-VjXCPe)

@@ -87,6 +87,6 @@ void *broadcast_server(void *arg) {
         }
       }
     }
-    sleep(THREAD_SLEEP_TIME_S);
+    // sleep(THREAD_SLEEP_TIME_S);
   }
 }
