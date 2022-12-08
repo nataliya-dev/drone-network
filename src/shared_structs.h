@@ -26,6 +26,7 @@
 #define PORTNO 8080
 
 #define DESTINATION_DRONE_ID 3
+#define THREAD_SLEEP_TIME_S 1
 
 pthread_mutex_t routing_table_mtx;
 pthread_mutex_t drone_ip_table_mutex;

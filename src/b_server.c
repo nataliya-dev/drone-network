@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-//#include <linux/in.h>
+// #include <linux/in.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -87,5 +87,6 @@ void *broadcast_server(void *arg) {
         }
       }
     }
+    sleep(THREAD_SLEEP_TIME_S);
   }
 }

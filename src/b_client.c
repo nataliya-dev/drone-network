@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-//#include <linux/in.h>
+// #include <linux/in.h>
 #include <arpa/inet.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -86,12 +86,12 @@ void* broadcast_client(void* arg) {
         printf("\tb_client:recvmsg reply.drone_id is %d\n", reply.drone_id);
 
         if (reply.drone_id == drone_number) {  // fill in with global id value
-          sleep(1);
+          sleep(THREAD_SLEEP_TIME_S);
           continue;
         }
 
         if (virtual_switch(reply.drone_id) != 1) {
-          sleep(1);
+          sleep(THREAD_SLEEP_TIME_S);
           continue;
         }
 
@@ -108,11 +108,11 @@ void* broadcast_client(void* arg) {
         // }
         if (update_my_routing_table(reply.routing_table, reply.drone_id,
                                     drone_number) == -1) {
-          sleep(1);
+          sleep(THREAD_SLEEP_TIME_S);
           continue;
         }
       }
     }
-    sleep(1);
+    sleep(THREAD_SLEEP_TIME_S);
   }
 }

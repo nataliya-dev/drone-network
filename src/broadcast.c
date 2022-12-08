@@ -13,7 +13,6 @@ void* run_broadcast(void* arg) {
   int iret1, iret2;
 
   iret1 = pthread_create(&thread1, NULL, broadcast_server, NULL);
-  sleep(1);
   iret2 = pthread_create(&thread2, NULL, broadcast_client, NULL);
 
   pthread_join(thread1, NULL);

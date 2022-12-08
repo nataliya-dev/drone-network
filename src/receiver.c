@@ -19,6 +19,7 @@ void *run_receiver(void *arg) {
     }
     printf("connected to server \n");
     pthread_create(&tid, NULL, thread, connfdp);
+    sleep(THREAD_SLEEP_TIME_S);
   }
 }
 
@@ -84,8 +85,8 @@ void move_recvd_file(char *file_name) {
   // printf("rename ret %d\n", ret);
 
   char command[100];
-  sprintf(command,"mv %s imgs/%s",file_name,file_name);
-  //strcpy(command, "cp file_name imgs/file_name");
+  sprintf(command, "mv %s imgs/%s", file_name, file_name);
+  // strcpy(command, "cp file_name imgs/file_name");
   system(command);
 
   // if (ret == 0) {
@@ -94,7 +95,6 @@ void move_recvd_file(char *file_name) {
   //   printf("Error: unable to rename the file\n");
   // }
 }
-
 
 void handleMessages(int connfd) {
   size_t readRetVal;
@@ -125,8 +125,6 @@ void handleMessages(int connfd) {
     printf("writeRetVal = %ld\n", writeRetVal);
 
   } while (readRetVal != -1);
-
-  sleep(2);
 
   move_recvd_file(file_name);
 }

@@ -156,7 +156,7 @@ void *run_sender(void *vargp) {
     printf("Image sent!\n");
 
   end:
-    sleep(1);
+    sleep(THREAD_SLEEP_TIME_S);
     continue;
   }
 }
