@@ -24,6 +24,12 @@ From the paper, “Deep learning-based object detection in low-altitude UAV data
 - 10 drones can cover 300 acres in 3.6 mins. 
 - 300 acres is about the size of the CU Boulder main campus
 
+## Overview of the capabilites
+- Ability to control the drone topology using a json file
+- Dynamic discovery of neighbors id numbers and their ip addresses
+- Dyanamic calculation of next-hop drone that will be the fastest route to destination
+- Removal of a neighbor from the routing table if the neighbor has not responded to a broadcast for a period of time
+
 ## Design architecture
 The diagrams below provide an overview of the implemented architecture  and algorithm. Each drone runs multiple threads, each one with a specific task. Each thread can write or read certain information through shared json files. 
 
@@ -69,6 +75,7 @@ Then you can run the following command on each machine. Make sure the drone numb
 ## Parameters that can be modified
 - DESTINATION_DRONE_ID : located in shared_structs.h and will define which drone is the destination drone for all the image. 
 - THREAD_SLEEP_TIME_S : located in shared_structs.h and will define how much time each thread sleeps within its while loop.  
+- MAX_TIME_NEIGHBOR_SILENT : located in shared_structs.h and will define, in seconds, what is the maximum time that one drone can hear nothing from another drone. When this threshold is exceeded then the drone will updated its routing table such that any entries that include the silent drone as next-hope get deleted.
 
 ## Results
 - We have tested with several configurations...

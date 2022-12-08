@@ -3,7 +3,6 @@
 #include "cJSON.h"
 #include "shared_structs.h"
 
-char *create_routing_table(void);
 int update_my_routing_table(char *neighbor_table, int neighbor_id, int my_id);
 cJSON *entry_exists(cJSON *my_routing_table, int drone_destination);
 cJSON *get_my_routing_table_json();

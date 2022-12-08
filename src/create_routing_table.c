@@ -5,72 +5,6 @@
 #include <stdio.h>
 #include <time.h>
 
-int thresholdDiffTime = 5;  // in seconds
-
-char *create_routing_table(void) {
-  const unsigned int routing_parameter_values[2][3] = {
-      {3, 2, 2},
-      {2, 2, 1},
-  };
-  char *string = NULL;
-  // cJSON *name = NULL;
-  cJSON *drones = NULL;
-  cJSON *drone = NULL;
-  cJSON *destination = NULL;
-  cJSON *next_hop = NULL;
-  cJSON *cost = NULL;
-
-  size_t index = 0;
-
-  cJSON *monitor = cJSON_CreateObject();
-  if (monitor == NULL) {
-    goto end;
-  }
-
-  drones = cJSON_CreateArray();
-  if (drones == NULL) {
-    goto end;
-  }
-  cJSON_AddItemToObject(monitor, "drones", drones);
-
-  for (index = 0;
-       index < (sizeof(routing_parameter_values) / (3 * sizeof(int)));
-       ++index) {
-    drone = cJSON_CreateObject();
-    if (drone == NULL) {
-      goto end;
-    }
-    cJSON_AddItemToArray(drones, drone);
-
-    destination = cJSON_CreateNumber(routing_parameter_values[index][0]);
-    if (destination == NULL) {
-      goto end;
-    }
-    cJSON_AddItemToObject(drone, "drone", destination);
-
-    next_hop = cJSON_CreateNumber(routing_parameter_values[index][1]);
-    if (next_hop == NULL) {
-      goto end;
-    }
-    cJSON_AddItemToObject(drone, "next-hop", next_hop);
-
-    cost = cJSON_CreateNumber(routing_parameter_values[index][2]);
-    if (NULL == cost) {
-      goto end;
-    }
-    cJSON_AddItemToObject(drone, "cost", cost);
-  }
-
-  string = cJSON_Print(monitor);
-  if (string == NULL) {
-    fprintf(stderr, "Failed to print monitor.\n");
-  }
-
-end:
-  cJSON_Delete(monitor);
-  return string;
-}
-
 cJSON *get_my_routing_table_json() {
   // printf("get_my_routing_table_json\n");
   cJSON *my_table = NULL;
@@ -281,7 +215,7 @@ void remove_inactive(void) {
     printf("(current_time - last_seen_time) = %d\n",
            (current_time - last_seen_time));
 
-    if ((current_time - last_seen_time) > thresholdDiffTime) {
+    if ((current_time - last_seen_time) > MAX_TIME_NEIGHBOR_SILENT) {
       remove_from_table(table_json, cur_drone_num);
     }
   }
