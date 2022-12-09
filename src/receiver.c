@@ -1,5 +1,6 @@
 #include "receiver.h"
 
+/* main while loop that create a thread for any incoming connection */
 void *run_receiver(void *arg) {
   printf("Start run_receiver\n");
 
@@ -29,9 +30,7 @@ void *thread(void *vargp) {
   pthread_detach(pthread_self());
   printf(" thread id  = %ld \n", pthread_self());
   free(vargp);
-
-  handleMessages(connfd);
-
+  receive_file(connfd);
   printf("connection closed \n");
   close(connfd);
   return NULL;
@@ -74,29 +73,12 @@ int open_listenfd(int port) {
 void move_recvd_file(char *file_name) {
   printf("Moving received file\n");
 
-  // char old_name[] = "rcvd.jpg";
-  // char folder_path[10] = "./imgs";
-  // char image_name[10] = "img_";
-  // char new_name[40];
-  // sprintf(new_name, "%s/%s%d", folder_path, image_name, rand() % 50);
-  // printf("New image name %s\n", new_name);
-
-  // int ret = rename(old_name, new_name);
-  // printf("rename ret %d\n", ret);
-
   char command[100];
   sprintf(command, "mv %s imgs/%s", file_name, file_name);
-  // strcpy(command, "cp file_name imgs/file_name");
   system(command);
-
-  // if (ret == 0) {
-  //   printf("File renamed successfully\n");
-  // } else {
-  //   printf("Error: unable to rename the file\n");
-  // }
 }
 
-void handleMessages(int connfd) {
+void receive_file(int connfd) {
   size_t readRetVal;
   size_t writeRetVal;
   int image_count = 0;

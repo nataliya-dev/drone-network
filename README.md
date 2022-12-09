@@ -9,7 +9,7 @@ Clone the directory to at least two machines which share the same network. Then 
 ```
 cd drone-network
 make clean
-cmake
+make
 ```
 
 Prior to running the code, the virtual_switch.json needs to be configured. This defined the communication between various drones. If a machine is running as drone number 1, then the virtual switch file needs to contain an entry for with "source":1. If it communicate with drones number 2 and 3 then it needs to have "destination": "2,3" right under the source. This way the drone knows it can only communicate with two other drones. It will ignore all other ones. 

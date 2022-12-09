@@ -4,7 +4,6 @@
 #include "sender.h"
 #include "shared_structs.h"
 
-thread_data_t thread_data_;
 int drone_number;
 
 int main(int argc, char** argv) {
@@ -18,7 +17,6 @@ int main(int argc, char** argv) {
   drone_number = atoi(argv[1]);
 
   clear_routing_table();
-
   clear_drone_ip_table();
 
   pthread_t thread1;
@@ -27,7 +25,7 @@ int main(int argc, char** argv) {
 
   int iret1, iret2, iret3;
 
-  iret1 = pthread_create(&thread1, NULL, run_sender, &thread_data_);
+  iret1 = pthread_create(&thread1, NULL, run_sender, NULL);
   iret2 = pthread_create(&thread2, NULL, run_receiver, NULL);
   iret3 = pthread_create(&thread3, NULL, run_broadcast, NULL);
 
